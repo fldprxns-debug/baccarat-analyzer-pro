@@ -76,8 +76,8 @@
       <h2 style="margin-top:22px;">시드머니 / 베팅금액 표시</h2>
       <div class="grid3">
         <div><label>시드머니</label><input id="seedMoney" type="number" min="0" step="1000" placeholder="예: 1000000" oninput="saveState();render();" /></div>
-        <div><label>기본 위험률</label><select id="riskMode" onchange="saveState();render();"><option value="0.005">0.5% 매우 보수</option><option value="0.01" selected>1% 보수</option><option value="0.015">1.5% 중간</option><option value="0.02">2% 높음</option></select></div>
-        <div><label>최대 1회 베팅 상한</label><select id="maxBetPct" onchange="saveState();render();"><option value="0.01">시드의 1%</option><option value="0.02" selected>시드의 2%</option><option value="0.03">시드의 3%</option></select></div>
+        <div><label>기본 위험률</label><select id="riskMode" onchange="saveState();render();"><option value="0.01">1% 보수</option><option value="0.03">3% 낮음</option><option value="0.05" selected>5% 중간</option><option value="0.10">10% 공격</option><option value="0.20">20% 고위험</option><option value="0.30">30% 초고위험</option></select></div>
+        <div><label>최대 1회 베팅 상한</label><select id="maxBetPct" onchange="saveState();render();"><option value="0.10" selected>시드의 10%</option><option value="0.15">시드의 15%</option><option value="0.20">시드의 20%</option><option value="0.30">시드의 30%</option></select></div>
       </div>
       <div class="buttons" style="margin-top:10px;"><button class="danger" onclick="resetSeed()">시드머니 리셋</button></div>
 
@@ -122,7 +122,7 @@
 <script>
   const BASE_KEY='speed_baccarat_pattern_analyzer_pro_v2';
   const SERVER_ENDPOINT='';
-  let state={ username:'guest', results:[], predictions:[], tableName:'', shoeId:'', patternLength:6, weightMode:'recent', minConfidence:55, seedMoney:'', riskMode:0.01, maxBetPct:0.02 };
+  let state={ username:'guest', results:[], predictions:[], tableName:'', shoeId:'', patternLength:6, weightMode:'recent', minConfidence:55, seedMoney:'', riskMode:0.05, maxBetPct:0.10 };
   function key(){ return `${BASE_KEY}_${state.username||'guest'}`; }
   function backupKey(){ return `${key()}_backup`; }
   function normalizeToken(token){ const x=String(token).trim().toUpperCase(); if(['B','BANKER','뱅커'].includes(x))return'B'; if(['P','PLAYER','플레이어'].includes(x))return'P'; if(['T','TIE','타이'].includes(x))return'T'; return null; }
