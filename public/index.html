@@ -54,7 +54,8 @@
   <div class="grid">
     <section class="card">
       <h2>로그인/프로필</h2>
-      <div class="row"><input id="username" placeholder="사용자명 예: user01" /><button class="purple" onclick="loginLocal()">로컬 로그인</button></div>
+      <div class="row"><input id="username" placeholder="사용자명 예: user01" /><input id="password" type="password" placeholder="비밀번호 6자 이상" /></div>
+      <div class="buttons" style="margin-top:10px;"><button class="purple" onclick="registerServer()">회원가입</button><button class="green" onclick="loginServer()">로그인</button><button class="gray" onclick="loadFromServer()">서버 불러오기</button><button class="gold" onclick="saveToServer()">서버 저장</button></div>
       <div id="loginStatus" class="footerline"></div>
 
       <h2 style="margin-top:22px;">결과 입력</h2>
@@ -87,7 +88,7 @@
       <div class="buttons" style="margin-top:10px;"><button class="gray" onclick="importBulk(false)">누적 추가</button></div>
 
       <h2 style="margin-top:22px;">저장/복구/서버</h2>
-      <div class="buttons"><button class="gold" onclick="exportJSON()">JSON 내보내기</button><button class="gray" onclick="document.getElementById('fileInput').click()">JSON 불러오기</button><button class="purple" onclick="syncToServer()">서버 저장 시도</button><button class="danger" onclick="clearAll()">전체 초기화</button></div>
+      <div class="buttons"><button class="gold" onclick="exportJSON()">JSON 내보내기</button><button class="gray" onclick="document.getElementById('fileInput').click()">JSON 불러오기</button><button class="green" onclick="saveToServer()">서버 저장</button><button class="danger" onclick="clearAll()">전체 초기화</button></div>
       <input id="fileInput" type="file" accept="application/json" style="display:none" onchange="importJSON(event)" />
       <div id="saveStatus" class="footerline"></div>
 
@@ -101,12 +102,9 @@
       <div class="statbox"><div class="stat"><strong id="bCount">0</strong><span class="muted">Banker</span></div><div class="stat"><strong id="pCount">0</strong><span class="muted">Player</span></div><div class="stat"><strong id="tCount">0</strong><span class="muted">Tie</span></div></div>
 
       <h2 style="margin-top:24px;">추천 정확도 추적</h2>
-      <h2 style="margin-top:24px;">최근 50판 추천 정확도</h2>
-<div class="statbox">
-  <div class="stat"><strong id="recentTotal">0</strong><span class="muted">최근 50 검증</span></div>
-  <div class="stat"><strong id="recentHit">0</strong><span class="muted">최근 50 적중</span></div>
-  <div class="stat"><strong id="recentRate">0%</strong><span class="muted">최근 50 승률</span></div>
-</div>
+      <div class="statbox"><div class="stat"><strong id="pickTotal">0</strong><span class="muted">전체 검증</span></div><div class="stat"><strong id="pickHit">0</strong><span class="muted">전체 적중</span></div><div class="stat"><strong id="pickRate">0%</strong><span class="muted">전체 승률</span></div></div>
+      <div class="statbox"><div class="stat"><strong id="recentTotal">0</strong><span class="muted">최근 100 검증</span></div><div class="stat"><strong id="recentHit">0</strong><span class="muted">최근 100 적중</span></div><div class="stat"><strong id="recentRate">0%</strong><span class="muted">최근 100 승률</span></div></div>
+      <div id="lastPickInfo" class="footerline"></div>
 
       <h2 style="margin-top:24px;">동일 패턴 분석</h2>
       <div id="patternInfo" class="muted"></div>
@@ -124,7 +122,7 @@
 
 <script>
   const BASE_KEY='speed_baccarat_pattern_analyzer_pro_v2';
-  const SERVER_ENDPOINT='';
+  const API_BASE='';
   let state={ username:'guest', results:[], predictions:[], tableName:'', shoeId:'', patternLength:6, weightMode:'recent', minConfidence:55, seedMoney:'' };
   function key(){ return `${BASE_KEY}_${state.username||'guest'}`; }
   function backupKey(){ return `${key()}_backup`; }
@@ -139,6 +137,51 @@
   function payload(){ readControls(); return {...state, updatedAt:now(), version:2}; }
   function saveState(){ const p=payload(); localStorage.setItem(key(),JSON.stringify(p)); localStorage.setItem(backupKey(),JSON.stringify(p)); document.getElementById('saveStatus').textContent=`자동 저장 완료: ${new Date().toLocaleString()} / 누적 ${state.results.length}개`; }
   function loadForUser(username='guest'){ state.username=username||'guest'; try{ const saved=JSON.parse(localStorage.getItem(key())||'{}'); state={...state,...saved,username:state.username}; } catch{ try{ const b=JSON.parse(localStorage.getItem(backupKey())||'{}'); state={...state,...b,username:state.username}; alert('기본 저장 데이터 오류로 백업본을 불러왔습니다.'); }catch{} } state.results=Array.isArray(state.results)?state.results.filter(x=>['B','P','T'].includes(x)):[]; state.predictions=Array.isArray(state.predictions)?state.predictions:[]; applyControls(); render(); }
+  function getToken(){ return localStorage.getItem('baccarat_auth_token') || ''; }
+  function setToken(token){ localStorage.setItem('baccarat_auth_token', token); }
+  async function api(path, options={}){
+    const headers={ 'Content-Type':'application/json', ...(options.headers||{}) };
+    const token=getToken();
+    if(token) headers.Authorization=`Bearer ${token}`;
+    const res=await fetch(`${API_BASE}${path}`, { ...options, headers });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error || '요청에 실패했습니다.');
+    return data;
+  }
+  async function registerServer(){
+    const username=document.getElementById('username').value.trim();
+    const password=document.getElementById('password').value;
+    try{
+      const data=await api('/api/register',{method:'POST',body:JSON.stringify({username,password})});
+      setToken(data.token); state.username=data.username; saveState(); await saveToServer(false);
+      document.getElementById('loginStatus').textContent=`회원가입/로그인 완료: ${data.username}`;
+    }catch(e){ alert(e.message); }
+  }
+  async function loginServer(){
+    const username=document.getElementById('username').value.trim();
+    const password=document.getElementById('password').value;
+    try{
+      const data=await api('/api/login',{method:'POST',body:JSON.stringify({username,password})});
+      setToken(data.token); state.username=data.username; loadForUser(data.username); await loadFromServer(false);
+      document.getElementById('loginStatus').textContent=`서버 로그인 완료: ${data.username}`;
+    }catch(e){ alert(e.message); }
+  }
+  async function saveToServer(showAlert=true){
+    if(!getToken()){ alert('먼저 로그인 또는 회원가입을 해주세요.'); return; }
+    try{
+      await api('/api/state',{method:'POST',body:JSON.stringify({state:payload()})});
+      if(showAlert) alert('서버 저장 완료');
+      document.getElementById('loginStatus').textContent=`서버 저장 완료: ${new Date().toLocaleString()}`;
+    }catch(e){ alert(e.message); }
+  }
+  async function loadFromServer(showAlert=true){
+    if(!getToken()){ alert('먼저 로그인 또는 회원가입을 해주세요.'); return; }
+    try{
+      const data=await api('/api/state');
+      if(data.state){ state={...state,...data.state,username:state.username}; applyControls(); saveState(); render(); if(showAlert) alert('서버 데이터 불러오기 완료'); }
+      else if(showAlert) alert('서버에 저장된 데이터가 아직 없습니다.');
+    }catch(e){ alert(e.message); }
+  }
   function loginLocal(){ const u=document.getElementById('username').value.trim()||'guest'; loadForUser(u); document.getElementById('loginStatus').textContent=`로컬 로그인: ${u} / 사용자별 별도 저장소 사용 중`; }
   function resetSeed(){ if(!confirm('시드머니 입력값만 리셋할까요? 패턴 데이터는 유지됩니다.'))return; state.seedMoney=''; saveState(); render(); }
   function weightForIndex(i,total){ if(state.weightMode==='none')return 1; const age=total-i; if(state.weightMode==='strong')return Math.max(0.15,1/(1+age*0.015)); return Math.max(0.30,1/(1+age*0.006)); }
@@ -150,8 +193,8 @@
     if(!seed||!rec||rec.blocked||rec.result==='T')return{amount:0,percent:0,score:0,reason:'추천 없음, 신뢰도 부족, 또는 Tie 추천은 베팅 제외'};
     if(rec.sample<3)return{amount:0,percent:0,score:0,reason:'동일 패턴 표본 3회 미만으로 관망'};
 
-    const recent=recentAccuracy(50);
-    if(recent.total>=20 && recent.rate<50)return{amount:0,percent:0,score:0,reason:'최근 50 기준 승률이 50% 미만이라 관망'};
+    const recent=recentAccuracy(100);
+    if(recent.total>=20 && recent.rate<50)return{amount:0,percent:0,score:0,reason:'최근 100 기준 승률이 50% 미만이라 관망'};
 
     const totalBP=state.results.filter(x=>x==='B'||x==='P').length;
     const targetCount=state.results.filter(x=>x===rec.result).length;
@@ -179,7 +222,6 @@
   function importBulk(){ const tokens=document.getElementById('bulkInput').value.split(/[\s,|/\-]+/).map(normalizeToken).filter(Boolean); if(!tokens.length){alert('불러올 수 있는 결과가 없습니다.');return;} tokens.forEach(addResult); document.getElementById('bulkInput').value=''; }
   function exportJSON(){ const blob=new Blob([JSON.stringify(payload(),null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-'); a.href=url; a.download=`speed-baccarat-pro-backup-${state.username}-${stamp}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
   function importJSON(event){ const file=event.target.files[0]; if(!file)return; const reader=new FileReader(); reader.onload=()=>{ try{ const data=JSON.parse(reader.result); const imported=Array.isArray(data.results)?data.results.map(normalizeToken).filter(Boolean):[]; if(!imported.length){alert('불러올 결과 데이터가 없습니다.');return;} const append=confirm('확인: 현재 데이터 뒤에 누적 추가\n취소: 백업 파일 내용으로 교체'); state.results=append?state.results.concat(imported):imported; state.predictions=append?state.predictions:(Array.isArray(data.predictions)?data.predictions:[]); state.tableName=data.tableName||state.tableName; state.shoeId=data.shoeId||state.shoeId; saveState(); applyControls(); render(); }catch{ alert('JSON 파일을 읽을 수 없습니다.'); } finally{ event.target.value=''; } }; reader.readAsText(file); }
-  async function syncToServer(){ if(!SERVER_ENDPOINT){ alert('서버 주소가 아직 설정되지 않았습니다. 서버 버전에서는 기존 API 저장 버튼을 사용하세요.'); return; } try{ const res=await fetch(SERVER_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload())}); if(!res.ok)throw new Error('server error'); alert('서버 저장 완료'); }catch(e){ alert('서버 저장 실패: 서버 주소/API/CORS 설정을 확인하세요.'); } }
   function recentAccuracy(limit=100){ const arr=state.predictions.slice(-limit); const total=arr.length; const hit=arr.filter(x=>x.hit).length; return{total,hit,rate:total?hit/total*100:0}; }
   function patternRanking(){ const map=new Map(); state.predictions.filter(x=>x.patternLength===state.patternLength&&x.pattern).forEach(x=>{ const key=`${x.pattern}|${x.predicted}`; if(!map.has(key))map.set(key,{pattern:x.pattern,predicted:x.predicted,total:0,hit:0,avgConfidence:0}); const o=map.get(key); o.total++; if(x.hit)o.hit++; o.avgConfidence+=x.confidence||0; }); return [...map.values()].map(o=>({...o,rate:o.total?o.hit/o.total*100:0,avgConfidence:o.total?o.avgConfidence/o.total:0})).filter(o=>o.total>=2).sort((a,b)=>b.rate-a.rate||b.total-a.total||b.avgConfidence-a.avgConfidence).slice(0,10); }
   function renderRoad(){ document.getElementById('road').innerHTML=state.results.map(x=>`<span class="chip ${x}">${x}</span>`).join(''); document.getElementById('count').textContent=`총 ${state.results.length}개`; }
