@@ -101,9 +101,12 @@
       <div class="statbox"><div class="stat"><strong id="bCount">0</strong><span class="muted">Banker</span></div><div class="stat"><strong id="pCount">0</strong><span class="muted">Player</span></div><div class="stat"><strong id="tCount">0</strong><span class="muted">Tie</span></div></div>
 
       <h2 style="margin-top:24px;">추천 정확도 추적</h2>
-      <div class="statbox"><div class="stat"><strong id="pickTotal">0</strong><span class="muted">전체 검증</span></div><div class="stat"><strong id="pickHit">0</strong><span class="muted">전체 적중</span></div><div class="stat"><strong id="pickRate">0%</strong><span class="muted">전체 승률</span></div></div>
-      <div class="statbox"><div class="stat"><strong id="recentTotal">0</strong><span class="muted">최근 100 검증</span></div><div class="stat"><strong id="recentHit">0</strong><span class="muted">최근 100 적중</span></div><div class="stat"><strong id="recentRate">0%</strong><span class="muted">최근 100 승률</span></div></div>
-      <div id="lastPickInfo" class="footerline"></div>
+      <h2 style="margin-top:24px;">최근 50판 추천 정확도</h2>
+<div class="statbox">
+  <div class="stat"><strong id="recentTotal">0</strong><span class="muted">최근 50 검증</span></div>
+  <div class="stat"><strong id="recentHit">0</strong><span class="muted">최근 50 적중</span></div>
+  <div class="stat"><strong id="recentRate">0%</strong><span class="muted">최근 50 승률</span></div>
+</div>
 
       <h2 style="margin-top:24px;">동일 패턴 분석</h2>
       <div id="patternInfo" class="muted"></div>
@@ -147,8 +150,8 @@
     if(!seed||!rec||rec.blocked||rec.result==='T')return{amount:0,percent:0,score:0,reason:'추천 없음, 신뢰도 부족, 또는 Tie 추천은 베팅 제외'};
     if(rec.sample<3)return{amount:0,percent:0,score:0,reason:'동일 패턴 표본 3회 미만으로 관망'};
 
-    const recent=recentAccuracy(100);
-    if(recent.total>=20 && recent.rate<50)return{amount:0,percent:0,score:0,reason:'최근 100 기준 승률이 50% 미만이라 관망'};
+    const recent=recentAccuracy(50);
+    if(recent.total>=20 && recent.rate<50)return{amount:0,percent:0,score:0,reason:'최근 50 기준 승률이 50% 미만이라 관망'};
 
     const totalBP=state.results.filter(x=>x==='B'||x==='P').length;
     const targetCount=state.results.filter(x=>x===rec.result).length;
