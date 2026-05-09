@@ -3,155 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>바카라 최고급 분석기</title>
+  <title>양택조 최고급 분석기</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Arial, sans-serif;
-      color: #f5f7fb;
+      color: #f6f7fb;
       background:
-        radial-gradient(circle at top left, rgba(37,99,235,.22), transparent 28%),
-        radial-gradient(circle at top right, rgba(220,38,38,.18), transparent 25%),
-        linear-gradient(135deg, #05070a, #111827 45%, #05070a);
+        radial-gradient(circle at top left, rgba(37,99,235,.22), transparent 26%),
+        radial-gradient(circle at top right, rgba(220,38,38,.18), transparent 26%),
+        linear-gradient(135deg, #05070a, #101827 48%, #05070a);
     }
     .wrap { max-width: 1680px; margin: 0 auto; padding: 8px; }
     .panel {
-      background: linear-gradient(180deg, rgba(18,24,32,.94), rgba(7,11,16,.96));
-      border: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(18,24,32,.96), rgba(7,11,16,.97));
+      border: 1px solid rgba(255,255,255,.09);
       border-radius: 8px;
-      box-shadow: 0 18px 45px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow: 0 16px 36px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
     }
-    .top-grid { display: grid; grid-template-columns: 1.05fr .72fr 1.55fr .55fr; gap: 6px; margin-bottom: 6px; }
-    .dashboard-grid { display:grid; grid-template-columns: 1fr 1.42fr; gap:6px; margin-bottom:6px; }
-    .quick-stats { display:grid; grid-template-columns: repeat(5, 1fr); gap:0; }
-    .quick-stat { padding: 12px 14px; border-right:1px solid rgba(255,255,255,.08); }
-    .quick-stat:last-child { border-right:0; }
-    .panel-pad { padding: 12px; }
-    h1, h2, h3 { margin: 0; }
-    h2 { font-size: 15px; margin-bottom: 10px; }
+    .pad { padding: 12px; }
+    h2 { margin: 0 0 10px; font-size: 15px; }
     .muted { color: #a5adba; font-size: 12px; }
-    .divider { width: 1px; background: rgba(255,255,255,.09); }
-    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .input-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .top-grid { display: grid; grid-template-columns: 1.05fr .72fr 1.7fr .58fr; gap: 6px; margin-bottom: 6px; }
+    .quick-stats { display:grid; grid-template-columns: repeat(5, 1fr); height: 100%; }
+    .quick-stat { padding: 12px; border-right:1px solid rgba(255,255,255,.08); }
+    .quick-stat:last-child { border-right:0; }
+    .dashboard-grid { display:grid; grid-template-columns: 1fr 1.35fr; gap:6px; margin-bottom:6px; }
+    .main-grid { display:grid; grid-template-columns: 1fr 174px; gap:6px; margin-bottom:6px; }
+    .sub-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:6px; }
+    .input-buttons { display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; }
+    .row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     button {
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.14);
       border-radius: 7px;
-      padding: 11px 14px;
+      padding: 10px 12px;
+      color: #fff;
       font-weight: 900;
       cursor: pointer;
-      color: white;
       background: linear-gradient(180deg, #263241, #151b24);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 8px 18px rgba(0,0,0,.22);
     }
     button:hover { filter: brightness(1.1); }
-    .btn-blue { background: linear-gradient(180deg, #1d5bd6, #0d2b69); border-color: rgba(74,144,255,.45); }
-    .btn-red { background: linear-gradient(180deg, #c51e2f, #650914); border-color: rgba(255,86,105,.45); }
-    .btn-green { background: linear-gradient(180deg, #168a35, #064018); border-color: rgba(75,220,117,.35); }
-    .btn-pair.on { outline: 2px solid #facc15; }
-    .circle-label {
-      width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 900; margin-right: 8px; box-shadow: inset 0 1px 5px rgba(255,255,255,.35), 0 5px 18px rgba(0,0,0,.35);
-    }
-    .blue-grad { background: radial-gradient(circle at 35% 25%, #6ba2ff, #1d5bd6 55%, #0a245c); }
-    .red-grad { background: radial-gradient(circle at 35% 25%, #ff7381, #c51e2f 55%, #5c0710); }
-    .green-grad { background: radial-gradient(circle at 35% 25%, #68db7d, #168a35 55%, #063b16); }
-    .btn-sub { display: block; font-size: 11px; opacity: .85; margin-top: 3px; }
-    .pair-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); font-size: 12px; cursor: pointer; }
-    .pair-pill.on { background: rgba(250,204,21,.12); border-color: rgba(250,204,21,.55); }
-    .mini-ball { width: 15px; height: 15px; border-radius: 50%; display:inline-block; }
-    .mini-blue { background: #2563eb; box-shadow: 0 0 10px rgba(37,99,235,.8); }
-    .mini-red { background: #dc2626; box-shadow: 0 0 10px rgba(220,38,38,.8); }
-    .main-grid { display: grid; grid-template-columns: 1fr 174px; gap: 8px; margin-bottom: 8px; }
-    .sub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
-    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-    .compact-bottom { display:grid; grid-template-columns: .95fr .9fr 1.15fr; gap:6px; }
-    .score-big { font-size: 36px; font-weight: 900; line-height: 1; }
-    .blue-text { color: #2f89ff; }
-    .red-text { color: #ff3349; }
-    .yellow-text { color: #facc15; }
-    .green-text { color: #22c55e; }
-
+    .btn-blue { background: linear-gradient(180deg, #1d5bd6, #0d2b69); }
+    .btn-red { background: linear-gradient(180deg, #c51e2f, #650914); }
+    .btn-green { background: linear-gradient(180deg, #168a35, #064018); }
+    .circle-label { width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-right:6px; font-size:20px; font-weight:900; }
+    .blue-grad { background: radial-gradient(circle at 35% 25%, #70a8ff, #1d5bd6 55%, #071b48); }
+    .red-grad { background: radial-gradient(circle at 35% 25%, #ff7180, #c71e2f 55%, #520710); }
+    .green-grad { background: radial-gradient(circle at 35% 25%, #69e582, #168a35 55%, #052f12); }
+    .btn-sub { display:block; margin-top:2px; font-size:11px; opacity:.85; }
+    .pair-pill { display:inline-flex; align-items:center; gap:7px; padding:9px 11px; border-radius:999px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); font-size:12px; font-weight:900; cursor:pointer; }
+    .pair-pill.on { background:rgba(250,204,21,.13); border-color:rgba(250,204,21,.55); }
+    .mini-ball { width:14px; height:14px; border-radius:50%; display:inline-block; }
+    .mini-blue { background:#2563eb; box-shadow:0 0 10px rgba(37,99,235,.8); }
+    .mini-red { background:#dc2626; box-shadow:0 0 10px rgba(220,38,38,.8); }
+    .score-big { font-size:30px; font-weight:900; line-height:1; margin-top:4px; }
+    .blue-text { color:#2f89ff; } .red-text { color:#ff3349; } .yellow-text { color:#facc15; } .green-text { color:#22c55e; }
+    .prediction-line { display:grid; grid-template-columns: repeat(4, 1fr); border:1px solid rgba(255,255,255,.1); border-radius:6px; overflow:hidden; margin-top:10px; }
+    .prediction-line div { padding:9px; text-align:center; border-right:1px solid rgba(255,255,255,.08); }
+    .prediction-line div:last-child { border-right:0; }
     .road-board {
-      position: relative;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding: 0;
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 5px;
+      overflow-x:auto; overflow-y:hidden;
+      border:1px solid rgba(255,255,255,.13); border-radius:5px;
       background:
         linear-gradient(rgba(255,255,255,.115) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,.115) 1px, transparent 1px),
-        radial-gradient(circle at 40% 20%, rgba(255,255,255,.04), transparent 35%),
         #0c1116;
       box-shadow: inset 0 0 18px rgba(0,0,0,.55);
     }
-    .big-board { display: grid; grid-template-rows: repeat(6, 42px); grid-auto-flow: column; grid-auto-columns: 42px; min-height: 252px; background-size: 42px 42px, 42px 42px, auto, auto; }
-    .small-board { display: grid; grid-template-rows: repeat(6, 28px); grid-auto-flow: column; grid-auto-columns: 28px; min-height: 168px; background-size: 28px 28px, 28px 28px, auto, auto; }
+    .big-board { display:grid; grid-template-rows:repeat(6,42px); grid-auto-flow:column; grid-auto-columns:42px; min-height:252px; background-size:42px 42px,42px 42px,auto; }
+    .small-board { display:grid; grid-template-rows:repeat(6,28px); grid-auto-flow:column; grid-auto-columns:28px; min-height:168px; background-size:28px 28px,28px 28px,auto; }
     .cell { display:flex; align-items:center; justify-content:center; position:relative; }
-    .big-disc {
-      width: 34px; height: 34px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
-      font-size: 18px; font-weight: 900; color: white; border: 2px solid rgba(255,255,255,.22);
-      box-shadow: inset 0 2px 8px rgba(255,255,255,.22), inset 0 -6px 12px rgba(0,0,0,.32), 0 4px 12px rgba(0,0,0,.42);
-    }
-    .disc-player { background: radial-gradient(circle at 35% 25%, #70a8ff, #1d5bd6 55%, #071b48); }
-    .disc-banker { background: radial-gradient(circle at 35% 25%, #ff7180, #c71e30 55%, #520710); }
-    .disc-tie { background: radial-gradient(circle at 35% 25%, #69e582, #168a35 55%, #052f12); }
-    .derived-disc {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.035);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow: inset 0 2px 7px rgba(255,255,255,.08), inset 0 -5px 10px rgba(0,0,0,.3), 0 3px 9px rgba(0,0,0,.35);
-    }
-    .ring { width: 17px; height: 17px; border-radius: 50%; border: 3px solid #2563eb; background: rgba(8,12,18,.95); }
-    .ring.red { border-color: #dc2626; }
-    .pair-blue, .pair-red { position:absolute; width: 10px; height: 10px; border-radius:50%; border:1px solid rgba(255,255,255,.9); z-index:2; }
-    .pair-blue { left: 4px; bottom: 4px; background:#2563eb; box-shadow:0 0 8px #2563eb; }
-    .pair-red { right: 4px; top: 4px; background:#dc2626; box-shadow:0 0 8px #dc2626; }
-    .small-board .pair-blue, .small-board .pair-red { width: 7px; height: 7px; }
-    .road-empty { padding: 18px; color: #6f7785; font-size: 13px; }
-    .side-legend { padding: 14px; display:flex; flex-direction:column; gap:12px; }
-    .legend-box { border: 1px solid rgba(255,255,255,.11); border-radius: 7px; padding: 12px; background: rgba(255,255,255,.03); }
-    .legend-row { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:13px; }
-    .history-row { display:flex; gap:6px; overflow-x:auto; padding: 10px 0 2px; }
-    .history-chip { width: 22px; height: 22px; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; color:white; position:relative; flex:0 0 auto; }
-    .meter { width: 100%; height: 8px; background: rgba(255,255,255,.09); border-radius: 999px; overflow:hidden; margin-top:10px; }
-    .meter div { height:100%; background: linear-gradient(90deg, #2563eb, #facc15, #dc2626); width:0; }
-    .prediction-line { display:grid; grid-template-columns: repeat(3, 1fr); border:1px solid rgba(255,255,255,.1); border-radius:6px; overflow:hidden; margin-top:10px; }
-    .prediction-line div { padding:10px; text-align:center; border-right:1px solid rgba(255,255,255,.08); }
-    .prediction-line div:last-child { border-right:0; }
+    .big-disc { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:white; border:2px solid rgba(255,255,255,.22); box-shadow:inset 0 2px 8px rgba(255,255,255,.22), inset 0 -6px 12px rgba(0,0,0,.32), 0 4px 12px rgba(0,0,0,.42); }
+    .disc-player { background:radial-gradient(circle at 35% 25%, #70a8ff, #1d5bd6 55%, #071b48); }
+    .disc-banker { background:radial-gradient(circle at 35% 25%, #ff7180, #c71e2f 55%, #520710); }
+    .disc-tie { background:radial-gradient(circle at 35% 25%, #69e582, #168a35 55%, #052f12); }
+    .derived-disc { width:22px; height:22px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.035); display:flex; align-items:center; justify-content:center; }
+    .ring { width:17px; height:17px; border-radius:50%; border:3px solid #2563eb; background:rgba(8,12,18,.95); }
+    .ring.red { border-color:#dc2626; }
+    .pair-blue, .pair-red { position:absolute; width:9px; height:9px; border-radius:50%; border:1px solid rgba(255,255,255,.9); z-index:2; }
+    .pair-blue { left:3px; bottom:3px; background:#2563eb; box-shadow:0 0 8px #2563eb; }
+    .pair-red { right:3px; top:3px; background:#dc2626; box-shadow:0 0 8px #dc2626; }
+    .history-row { display:flex; gap:6px; overflow-x:auto; padding:8px 0 2px; min-height:36px; }
+    .history-chip { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; color:white; position:relative; flex:0 0 auto; }
+    .road-empty { padding:14px; color:#6f7785; font-size:13px; }
+    .legend-box { padding:12px; margin-bottom:10px; border:1px solid rgba(255,255,255,.1); border-radius:7px; background:rgba(255,255,255,.03); }
+    .legend-row { display:flex; align-items:center; gap:8px; margin:7px 0; font-size:13px; }
+    .meter { width:100%; height:8px; background:rgba(255,255,255,.09); border-radius:999px; overflow:hidden; margin-top:10px; }
+    .meter div { height:100%; background:linear-gradient(90deg,#2563eb,#facc15,#dc2626); width:0; }
     .hidden-input { display:none; }
-    @media (max-width: 1000px) {
-      .top-grid, .main-grid, .sub-grid, .bottom-grid { grid-template-columns: 1fr; }
-      .big-board { grid-template-rows: repeat(6, 42px); grid-auto-columns: 42px; min-height:252px; background-size:42px 42px,42px 42px,auto,auto; }
-      .big-disc { width:34px; height:34px; font-size:18px; }
+    @media (max-width: 1050px) {
+      .top-grid, .dashboard-grid, .main-grid, .sub-grid { grid-template-columns:1fr; }
+      .quick-stats { grid-template-columns:1fr 1fr; }
+      .quick-stat { border-bottom:1px solid rgba(255,255,255,.08); }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="top-grid">
-      <div class="panel panel-pad">
+      <div class="panel pad">
         <h2>결과 입력</h2>
         <div class="input-buttons">
-          <button class="btn-blue" onclick="addRound('PLAYER')"><span class="circle-label blue-grad">P</span>PLAYER<span class="btn-sub">플레이어</span></button>
-          <button class="btn-red" onclick="addRound('BANKER')"><span class="circle-label red-grad">B</span>BANKER<span class="btn-sub">뱅커</span></button>
-          <button class="btn-green" onclick="addRound('TIE')"><span class="circle-label green-grad">T</span>TIE<span class="btn-sub">타이</span></button>
+          <button id="btnPlayer" class="btn-blue"><span class="circle-label blue-grad">P</span>PLAYER<span class="btn-sub">플레이어</span></button>
+          <button id="btnBanker" class="btn-red"><span class="circle-label red-grad">B</span>BANKER<span class="btn-sub">뱅커</span></button>
+          <button id="btnTie" class="btn-green"><span class="circle-label green-grad">T</span>TIE<span class="btn-sub">타이</span></button>
         </div>
       </div>
 
-      <div class="panel panel-pad">
+      <div class="panel pad">
         <h2>페어 선택</h2>
         <div class="row">
-          <div id="playerPairBtn" class="pair-pill" onclick="togglePlayerPair()"><span class="mini-ball mini-blue"></span>플 페어</div>
-          <div id="bankerPairBtn" class="pair-pill" onclick="toggleBankerPair()"><span class="mini-ball mini-red"></span>뱅 페어</div>
+          <div id="playerPairBtn" class="pair-pill"><span class="mini-ball mini-blue"></span>플 페어</div>
+          <div id="bankerPairBtn" class="pair-pill"><span class="mini-ball mini-red"></span>뱅 페어</div>
         </div>
       </div>
 
@@ -159,37 +125,38 @@
         <div class="quick-stats">
           <div class="quick-stat"><div class="muted">AI 다음 예측</div><div id="nextPick" class="score-big">대기</div><div id="nextConfidence" class="muted">신뢰도 0%</div></div>
           <div class="quick-stat"><div class="muted">AI 최근 50판 적중률</div><div id="aiRate" class="score-big yellow-text">0.0%</div><div id="aiCount" class="muted">적중 0 / 예측 0</div></div>
-          <div class="quick-stat"><div class="muted">흐름 점수</div><div id="flowScore" class="score-big blue-text">50</div><div id="flowTextTop" class="muted">데이터 부족</div></div>
+          <div class="quick-stat"><div class="muted">복합 표본</div><div id="sampleScore" class="score-big">0</div><div id="matchLevel" class="muted">대기</div></div>
           <div class="quick-stat"><div class="muted">위험도</div><div id="riskLabelTop" class="score-big yellow-text">중간</div><div id="riskTextTop" class="muted">대기</div></div>
           <div class="quick-stat"><div class="muted">현재 줄</div><div id="streakText" class="score-big">대기</div><div class="muted">타이 제외</div></div>
         </div>
       </div>
 
-      <div class="panel panel-pad">
+      <div class="panel pad">
         <div class="row">
-          <button onclick="undo()">↩</button>
-          <button onclick="resetAll()">⟳</button>
-          <button onclick="document.getElementById('fileInput').click()">⇧</button>
-          <button onclick="saveData()">⇩</button>
-          <input id="fileInput" class="hidden-input" type="file" accept="application/json,.txt,.csv" onchange="loadData(event)">
+          <button id="btnUndo">↩</button>
+          <button id="btnReset">⟳</button>
+          <button id="btnLoad">⇧</button>
+          <button id="btnSave">⇩</button>
+          <input id="fileInput" class="hidden-input" type="file" accept="application/json,.txt,.csv">
         </div>
         <div class="muted" style="margin-top:8px;">전체 <b id="totalRounds">0</b> / 실계산 <b id="mainRounds">0</b></div>
       </div>
     </div>
 
     <div class="dashboard-grid">
-      <div class="panel panel-pad">
-        <h2>최근 6게임 패턴 분석</h2>
+      <div class="panel pad">
+        <h2>복합 패턴 분석 <span class="muted">플/뱅 + 원매 + 육매 + 중국점 + 소강로</span></h2>
         <div id="patternBalls" class="history-row"></div>
         <div class="prediction-line">
           <div><span class="muted">플레이어</span><br><b id="patternP" class="blue-text">0%</b></div>
           <div><span class="muted">뱅커</span><br><b id="patternB" class="red-text">0%</b></div>
           <div><span class="muted">표본</span><br><b id="patternSamples">0</b></div>
+          <div><span class="muted">단계</span><br><b id="patternTier">대기</b></div>
         </div>
         <div class="row" style="margin-top:10px;"><span class="muted">추천:</span><b id="recommendText">대기</b><span class="muted">신뢰도:</span><b id="recommendConfidence" class="yellow-text">0%</b></div>
       </div>
 
-      <div class="panel panel-pad">
+      <div class="panel pad">
         <h2>최근 기록 <span class="muted">최신 30게임 · 자동저장</span></h2>
         <div id="history" class="history-row"></div>
         <div class="meter"><div id="riskMeter"></div></div>
@@ -197,11 +164,11 @@
     </div>
 
     <div class="main-grid">
-      <div class="panel panel-pad">
+      <div class="panel pad">
         <h2>원매 (Big Road)</h2>
         <div id="bigRoad" class="road-board big-board"></div>
       </div>
-      <div class="panel side-legend">
+      <div class="panel pad">
         <div class="legend-box">
           <div class="legend-row"><span class="history-chip disc-player">P</span>플레이어</div>
           <div class="legend-row"><span class="history-chip disc-banker">B</span>뱅커</div>
@@ -211,222 +178,47 @@
           <div class="muted">페어 표시</div>
           <div class="legend-row"><span class="mini-ball mini-blue"></span>플 페어</div>
           <div class="legend-row"><span class="mini-ball mini-red"></span>뱅 페어</div>
-          <div class="legend-row"><span class="mini-ball mini-blue"></span><span class="mini-ball mini-red"></span>쌍 페어</div>
         </div>
-        <button onclick="resetAll()">전체 지우기</button>
       </div>
     </div>
 
     <div class="sub-grid">
-      <div class="panel panel-pad"><h2>육매 (Big Eye Road)</h2><div id="bigEye" class="road-board small-board"></div></div>
-      <div class="panel panel-pad"><h2>중국점 (Small Road)</h2><div id="smallRoad" class="road-board small-board"></div></div>
-      <div class="panel panel-pad"><h2>소강로 (Cockroach Road)</h2><div id="cockroach" class="road-board small-board"></div></div>
+      <div class="panel pad"><h2>육매 (Big Eye Road)</h2><div id="bigEye" class="road-board small-board"></div></div>
+      <div class="panel pad"><h2>중국점 (Small Road)</h2><div id="smallRoad" class="road-board small-board"></div></div>
+      <div class="panel pad"><h2>소강로 (Cockroach Road)</h2><div id="cockroach" class="road-board small-board"></div></div>
     </div>
-
-    
   </div>
 
   <script>
+    'use strict';
+
     let rounds = [];
     let playerPair = false;
     let bankerPair = false;
+    const STORAGE_KEY = 'baccarat-analyzer-composite-v3';
 
     const meta = {
-      PLAYER: { label: 'P', kr: '플', color: '#2563eb', className: 'disc-player', text: 'blue-text' },
-      BANKER: { label: 'B', kr: '뱅', color: '#dc2626', className: 'disc-banker', text: 'red-text' },
-      TIE: { label: 'T', kr: '타이', color: '#16a34a', className: 'disc-tie', text: 'green-text' }
+      PLAYER: { label:'P', kr:'플', className:'disc-player', text:'blue-text' },
+      BANKER: { label:'B', kr:'뱅', className:'disc-banker', text:'red-text' },
+      TIE: { label:'T', kr:'타이', className:'disc-tie', text:'green-text' }
     };
 
     function makeId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-
-    const STORAGE_KEY = 'baccarat-analyzer-pro-dark-v2-autosave';
-
+    function getMainResults(source) { return (source || rounds).filter(r => r.result === 'PLAYER' || r.result === 'BANKER'); }
+    function sideChar(result) { return result === 'PLAYER' ? 'P' : result === 'BANKER' ? 'B' : 'T'; }
     function normalizeResult(value) {
       const v = String(value || '').trim().toUpperCase();
-      if (['P', 'PLAYER', '플', '플레이어'].includes(v)) return 'PLAYER';
-      if (['B', 'BANKER', '뱅', '뱅커'].includes(v)) return 'BANKER';
-      if (['T', 'TIE', '타이'].includes(v)) return 'TIE';
+      if (['P','PLAYER','플','플레이어'].includes(v)) return 'PLAYER';
+      if (['B','BANKER','뱅','뱅커'].includes(v)) return 'BANKER';
+      if (['T','TIE','타이'].includes(v)) return 'TIE';
       return null;
     }
 
-    function normalizeRounds(raw) {
-      let source = raw;
-      if (typeof raw === 'string') {
-        try { source = JSON.parse(raw); }
-        catch {
-          source = raw.replace(/
-/g, '
-').split(/[
-,;| ]+/).filter(Boolean);
-        }
-      }
-
-      if (!Array.isArray(source)) {
-        source = source.rounds || source.records || source.history || source.data || source.results || [];
-      }
-
-      if (!Array.isArray(source)) return [];
-
-      const normalized = [];
-      source.forEach((item, index) => {
-        let result;
-        let pPair = false;
-        let bPair = false;
-        let createdAt;
-        let oldAiPick;
-
-        if (typeof item === 'string') {
-          result = normalizeResult(item);
-        } else if (item && typeof item === 'object') {
-          result = normalizeResult(item.result || item.winner || item.side || item.value || item.type || item.name);
-          pPair = Boolean(item.playerPair || item.pairPlayer || item.pPair || item.pp || item.player_pair || item.pair === 'PLAYER' || item.pair === 'P');
-          bPair = Boolean(item.bankerPair || item.pairBanker || item.bPair || item.bp || item.banker_pair || item.pair === 'BANKER' || item.pair === 'B');
-          if (item.pair === 'BOTH' || item.pair === '쌍페어' || item.bothPair) { pPair = true; bPair = true; }
-          createdAt = item.createdAt || item.time || item.date;
-          oldAiPick = item.aiPickBefore;
-        }
-
-        if (result) {
-          const before = analyzePattern(normalized, 6).pick;
-          normalized.push({
-            id: (item && item.id) || makeId() + index,
-            result,
-            playerPair: pPair,
-            bankerPair: bPair,
-            aiPickBefore: oldAiPick || before,
-            createdAt: createdAt || new Date().toISOString()
-          });
-        }
-      });
-
-      return normalized;
-    }
-
-    function saveToBrowser() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ rounds, savedAt: new Date().toISOString() }));
-    }
-
-    function loadFromBrowser() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return;
-        const parsed = JSON.parse(saved);
-        rounds = normalizeRounds(parsed.rounds || parsed);
-      } catch (e) {
-        console.warn('자동 저장 데이터 복구 실패', e);
-      }
-    }
-
-    function getMainResults(source = rounds) { return source.filter(r => r.result === 'PLAYER' || r.result === 'BANKER'); }
-
-    function analyzePattern(source = rounds, length = 6) {
+    function bigRoadColumns(source) {
       const main = getMainResults(source);
-      const current = main.slice(-length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
-      if (main.length <= length) return { pattern: current, samples: 0, playerNext: 0, bankerNext: 0, playerRate: 0, bankerRate: 0, pick: null, confidence: 0 };
-      let playerNext = 0, bankerNext = 0;
-      for (let i = 0; i <= main.length - length - 1; i++) {
-        const key = main.slice(i, i + length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
-        if (key === current) {
-          const next = main[i + length].result;
-          if (next === 'PLAYER') playerNext++;
-          if (next === 'BANKER') bankerNext++;
-        }
-      }
-      const samples = playerNext + bankerNext;
-      const playerRate = samples ? Math.round(playerNext / samples * 100) : 0;
-      const bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
-      const pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
-      const confidence = samples ? Math.max(playerRate, bankerRate) : 0;
-      return { pattern: current, samples, playerNext, bankerNext, playerRate, bankerRate, pick, confidence };
-    }
-
-    function addRound(result) {
-      const beforePrediction = analyzePattern(rounds, 6).pick;
-      rounds.push({
-        id: makeId(),
-        result,
-        playerPair,
-        bankerPair,
-        aiPickBefore: beforePrediction,
-        createdAt: new Date().toISOString()
-      });
-      playerPair = false;
-      bankerPair = false;
-      render();
-      saveToBrowser();
-    }
-
-    function togglePlayerPair() { playerPair = !playerPair; render(); }
-    function toggleBankerPair() { bankerPair = !bankerPair; render(); }
-    function undo() { rounds.pop(); render(); saveToBrowser(); }
-    function resetAll() {
-      if (confirm('전체 기록을 삭제할까요?')) {
-        rounds = [];
-        localStorage.removeItem(STORAGE_KEY);
-        render();
-      }
-    }
-
-    function aiWinRate(size = 50) {
-      const resolved = rounds
-        .filter(r => (r.result === 'PLAYER' || r.result === 'BANKER') && (r.aiPickBefore === 'PLAYER' || r.aiPickBefore === 'BANKER'))
-        .slice(-size);
-      const total = resolved.length;
-      const wins = resolved.filter(r => r.result === r.aiPickBefore).length;
-      return { total, wins, rate: total ? (wins / total * 100) : 0 };
-    }
-
-    function streakInfo() {
-      const main = getMainResults();
-      if (!main.length) return { side: null, count: 0 };
-      const last = main[main.length - 1].result;
-      let count = 0;
-      for (let i = main.length - 1; i >= 0; i--) {
-        if (main[i].result !== last) break;
-        count++;
-      }
-      return { side: last, count };
-    }
-
-    function flowScore() {
-      const main = getMainResults().slice(-20);
-      if (main.length < 6) return { score: 50, label: '대기', detail: '데이터 부족' };
-      let switches = 0;
-      for (let i = 1; i < main.length; i++) if (main[i].result !== main[i - 1].result) switches++;
-      const streak = streakInfo();
-      const switchRate = switches / Math.max(main.length - 1, 1);
-      let score = 50;
-      if (switchRate >= 0.65) score += 20;
-      if (switchRate <= 0.35) score += 20;
-      score += Math.min(streak.count * 8, 35);
-      score = Math.max(0, Math.min(100, Math.round(score)));
-      const label = score >= 80 ? '강함' : score >= 65 ? '양호' : score <= 45 ? '약함' : '보통';
-      const detail = switchRate >= 0.65 ? '퐁당 흐름 우세' : switchRate <= 0.35 ? '줄 흐름 우세' : '혼합 흐름';
-      return { score, label, detail };
-    }
-
-    function riskLevel(pattern) {
-      const main = getMainResults();
-      const streak = streakInfo();
-      const recent = main.slice(-12);
-      let switches = 0;
-      for (let i = 1; i < recent.length; i++) if (recent[i].result !== recent[i - 1].result) switches++;
-      let risk = 35;
-      if (main.length < 20) risk += 25;
-      if (pattern.samples < 3) risk += 25;
-      if (pattern.confidence < 60) risk += 15;
-      if (streak.count >= 5) risk += 10;
-      if (recent.length >= 10 && switches >= 8) risk += 10;
-      risk = Math.max(0, Math.min(100, risk));
-      if (risk >= 75) return { value: risk, label: '높음', message: '패턴 표본이 약하거나 흐름이 과열됨' };
-      if (risk >= 50) return { value: risk, label: '중간', message: '진입은 가능하지만 보수적으로 확인' };
-      return { value: risk, label: '낮음', message: '상대적으로 안정적인 구간' };
-    }
-
-    function bigRoadColumns() {
-      const main = getMainResults();
       const columns = [];
-      let current = [], last = null;
+      let current = [];
+      let last = null;
       main.forEach(round => {
         if (!last || round.result === last) current.push(round);
         else { columns.push(current); current = [round]; }
@@ -438,12 +230,8 @@
 
     function derivedRoad(columns, offset) {
       const marks = [];
-
       columns.forEach((col, colIndex) => {
         col.forEach((round, rowIndex) => {
-          // 실제 카지노 파생로드 방식에 가깝게 보정
-          // 첫 줄(row 0)은 비교할 이전 컬럼들이 충분히 생긴 뒤부터 표시
-          // 두 번째 줄부터는 현재 컬럼 기준 비교 대상 컬럼이 있을 때만 표시
           if (rowIndex === 0) {
             if (colIndex < offset + 1) return;
             const prevCol = columns[colIndex - 1];
@@ -460,17 +248,168 @@
           }
         });
       });
-
       return marks;
     }
 
+    function roadShapeKey(source) {
+      const cols = bigRoadColumns(source);
+      return cols.slice(-4).map(c => c.length).join('-');
+    }
+
+    function compositeKey(source, mode) {
+      const main = getMainResults(source);
+      const cols = bigRoadColumns(source);
+      const bigEye = derivedRoad(cols, 1);
+      const small = derivedRoad(cols, 2);
+      const cock = derivedRoad(cols, 3);
+      const pb = main.slice(-6).map(r => sideChar(r.result)).join('');
+      const shape = roadShapeKey(source);
+      const e = bigEye.slice(-6).join('');
+      const s = small.slice(-6).join('');
+      const c = cock.slice(-6).join('');
+
+      if (mode === 'full') return 'PB:' + pb + '|SH:' + shape + '|E:' + e + '|S:' + s + '|C:' + c;
+      if (mode === 'medium') return 'PB:' + pb + '|E:' + e + '|S:' + s;
+      if (mode === 'shape') return 'PB:' + pb + '|SH:' + shape;
+      return 'PB:' + pb;
+    }
+
+    function analyzeComposite(source, length) {
+      const all = source || rounds;
+      const main = getMainResults(all);
+      if (main.length <= 6) {
+        const pb = main.slice(-6).map(r => sideChar(r.result)).join('');
+        return { pick:null, confidence:0, samples:0, playerNext:0, bankerNext:0, playerRate:0, bankerRate:0, tier:'대기', pattern:pb };
+      }
+
+      const modes = [
+        { id:'full', label:'완전일치' },
+        { id:'medium', label:'파생로드 일치' },
+        { id:'shape', label:'원매흐름 일치' },
+        { id:'pb', label:'플/뱅 6패턴' }
+      ];
+
+      for (const mode of modes) {
+        const target = compositeKey(all, mode.id);
+        let playerNext = 0;
+        let bankerNext = 0;
+
+        for (let i = 6; i < all.length; i++) {
+          const next = all[i];
+          if (next.result !== 'PLAYER' && next.result !== 'BANKER') continue;
+          const before = all.slice(0, i);
+          if (getMainResults(before).length < 6) continue;
+          if (compositeKey(before, mode.id) === target) {
+            if (next.result === 'PLAYER') playerNext++;
+            if (next.result === 'BANKER') bankerNext++;
+          }
+        }
+
+        const samples = playerNext + bankerNext;
+        if (samples > 0 || mode.id === 'pb') {
+          const playerRate = samples ? Math.round(playerNext / samples * 100) : 0;
+          const bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
+          const pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
+          const confidence = samples ? Math.max(playerRate, bankerRate) : 0;
+          const pattern = main.slice(-6).map(r => sideChar(r.result)).join('');
+          return { pick, confidence, samples, playerNext, bankerNext, playerRate, bankerRate, tier:mode.label, pattern };
+        }
+      }
+    }
+
+    function normalizeRounds(raw) {
+      let source = raw;
+      if (typeof raw === 'string') {
+        try { source = JSON.parse(raw); }
+        catch { source = raw.replace(/\r/g, '\n').split(/[\n,;| ]+/).filter(Boolean); }
+      }
+      if (!Array.isArray(source)) source = source.rounds || source.records || source.history || source.data || source.results || [];
+      if (!Array.isArray(source)) return [];
+
+      const normalized = [];
+      source.forEach((item, index) => {
+        let result, pPair = false, bPair = false, createdAt, oldAiPick;
+        if (typeof item === 'string') result = normalizeResult(item);
+        else if (item && typeof item === 'object') {
+          result = normalizeResult(item.result || item.winner || item.side || item.value || item.type || item.name);
+          pPair = Boolean(item.playerPair || item.pairPlayer || item.pPair || item.pp || item.player_pair || item.pair === 'PLAYER' || item.pair === 'P');
+          bPair = Boolean(item.bankerPair || item.pairBanker || item.bPair || item.bp || item.banker_pair || item.pair === 'BANKER' || item.pair === 'B');
+          if (item.pair === 'BOTH' || item.pair === '쌍페어' || item.bothPair) { pPair = true; bPair = true; }
+          createdAt = item.createdAt || item.time || item.date;
+          oldAiPick = item.aiPickBefore;
+        }
+        if (result) {
+          const before = analyzeComposite(normalized).pick;
+          normalized.push({ id:(item && item.id) || makeId() + index, result, playerPair:pPair, bankerPair:bPair, aiPickBefore:oldAiPick || before, createdAt:createdAt || new Date().toISOString() });
+        }
+      });
+      return normalized;
+    }
+
+    function saveToBrowser() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ rounds, savedAt:new Date().toISOString() })); } catch(e) {}
+    }
+
+    function loadFromBrowser() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+        const parsed = JSON.parse(saved);
+        rounds = normalizeRounds(parsed.rounds || parsed);
+      } catch(e) { console.warn(e); }
+    }
+
+    function addRound(result) {
+      const beforePrediction = analyzeComposite(rounds).pick;
+      rounds.push({ id:makeId(), result, playerPair, bankerPair, aiPickBefore:beforePrediction, createdAt:new Date().toISOString() });
+      playerPair = false;
+      bankerPair = false;
+      saveToBrowser();
+      render();
+    }
+
+    function undo() { rounds.pop(); saveToBrowser(); render(); }
+    function resetAll() {
+      if (confirm('전체 기록을 삭제할까요?')) {
+        rounds = [];
+        localStorage.removeItem(STORAGE_KEY);
+        render();
+      }
+    }
+
+    function aiWinRate(size) {
+      const resolved = rounds.filter(r => (r.result === 'PLAYER' || r.result === 'BANKER') && (r.aiPickBefore === 'PLAYER' || r.aiPickBefore === 'BANKER')).slice(-(size || 50));
+      const total = resolved.length;
+      const wins = resolved.filter(r => r.result === r.aiPickBefore).length;
+      return { total, wins, rate: total ? wins / total * 100 : 0 };
+    }
+
+    function streakInfo() {
+      const main = getMainResults(rounds);
+      if (!main.length) return { side:null, count:0 };
+      const last = main[main.length - 1].result;
+      let count = 0;
+      for (let i = main.length - 1; i >= 0; i--) {
+        if (main[i].result !== last) break;
+        count++;
+      }
+      return { side:last, count };
+    }
+
+    function riskLevel(analysis) {
+      let risk = 35;
+      if (getMainResults(rounds).length < 20) risk += 25;
+      if (analysis.samples < 3) risk += 25;
+      if (analysis.confidence < 60) risk += 15;
+      risk = Math.max(0, Math.min(100, risk));
+      if (risk >= 75) return { value:risk, label:'높음', message:'표본 부족/과열' };
+      if (risk >= 50) return { value:risk, label:'중간', message:'보수적 확인' };
+      return { value:risk, label:'낮음', message:'상대적 안정' };
+    }
+
     function addPairDots(cell, round) {
-      if (round.playerPair) {
-        const blue = document.createElement('span'); blue.className = 'pair-blue'; cell.appendChild(blue);
-      }
-      if (round.bankerPair) {
-        const red = document.createElement('span'); red.className = 'pair-red'; cell.appendChild(red);
-      }
+      if (round.playerPair) { const b = document.createElement('span'); b.className = 'pair-blue'; cell.appendChild(b); }
+      if (round.bankerPair) { const r = document.createElement('span'); r.className = 'pair-red'; cell.appendChild(r); }
     }
 
     function renderBigRoad(columns) {
@@ -493,115 +432,126 @@
     function renderDerived(id, marks) {
       const el = document.getElementById(id);
       el.innerHTML = '';
-      if (!marks.length) {
-        el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
-        return;
-      }
-
+      if (!marks.length) { el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>'; return; }
       marks.forEach(mark => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        const holder = document.createElement('div');
-        holder.className = 'derived-disc';
-        const ring = document.createElement('div');
-        ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
-        holder.appendChild(ring);
-        cell.appendChild(holder);
-        el.appendChild(cell);
+        const cell = document.createElement('div'); cell.className = 'cell';
+        const holder = document.createElement('div'); holder.className = 'derived-disc';
+        const ring = document.createElement('div'); ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
+        holder.appendChild(ring); cell.appendChild(holder); el.appendChild(cell);
       });
     }
 
     function historyChip(round) {
-      const chip = document.createElement('div'); chip.className = 'history-chip ' + meta[round.result].className; chip.textContent = meta[round.result].label;
-      addPairDots(chip, round); return chip;
+      const chip = document.createElement('div');
+      chip.className = 'history-chip ' + meta[round.result].className;
+      chip.textContent = meta[round.result].label;
+      addPairDots(chip, round);
+      return chip;
     }
 
-    function renderPatternBalls(patternString) {
-      const el = document.getElementById('patternBalls'); el.innerHTML = '';
-      if (!patternString) { el.innerHTML = '<span class="muted">데이터 부족</span>'; return; }
-      patternString.split('').forEach(x => {
-        const r = { result: x === 'P' ? 'PLAYER' : 'BANKER', playerPair:false, bankerPair:false };
-        el.appendChild(historyChip(r));
-      });
+    function renderPatternBalls(pattern) {
+      const el = document.getElementById('patternBalls');
+      el.innerHTML = '';
+      if (!pattern) { el.innerHTML = '<span class="muted">데이터 부족</span>'; return; }
+      pattern.split('').forEach(x => el.appendChild(historyChip({ result:x === 'P' ? 'PLAYER' : 'BANKER' })));
     }
 
     function render() {
-      document.getElementById('playerPairBtn').className = 'pair-pill' + (playerPair ? ' on' : '');
-      document.getElementById('bankerPairBtn').className = 'pair-pill' + (bankerPair ? ' on' : '');
-
-      const main = getMainResults();
-      const pattern = analyzePattern(rounds, 6);
+      const main = getMainResults(rounds);
+      const columns = bigRoadColumns(rounds);
+      const analysis = analyzeComposite(rounds);
       const ai = aiWinRate(50);
       const streak = streakInfo();
-      const flow = flowScore();
-      const risk = riskLevel(pattern);
-      const columns = bigRoadColumns();
+      const risk = riskLevel(analysis);
 
+      document.getElementById('playerPairBtn').className = 'pair-pill' + (playerPair ? ' on' : '');
+      document.getElementById('bankerPairBtn').className = 'pair-pill' + (bankerPair ? ' on' : '');
       document.getElementById('totalRounds').textContent = rounds.length;
       document.getElementById('mainRounds').textContent = main.length;
+      document.getElementById('nextPick').textContent = analysis.pick ? meta[analysis.pick].kr : '대기';
+      document.getElementById('nextPick').className = 'score-big ' + (analysis.pick ? meta[analysis.pick].text : '');
+      document.getElementById('nextConfidence').textContent = '신뢰도 ' + analysis.confidence + '%';
       document.getElementById('aiRate').textContent = ai.rate.toFixed(1) + '%';
       document.getElementById('aiCount').textContent = '적중 ' + ai.wins + ' / 예측 ' + ai.total;
-      document.getElementById('nextPick').textContent = pattern.pick ? meta[pattern.pick].kr : '대기';
-      document.getElementById('nextPick').className = 'score-big ' + (pattern.pick ? meta[pattern.pick].text : '');
-      document.getElementById('nextConfidence').textContent = '신뢰도 ' + pattern.confidence + '%';
+      document.getElementById('sampleScore').textContent = analysis.samples;
+      document.getElementById('matchLevel').textContent = analysis.tier;
+      document.getElementById('riskLabelTop').textContent = risk.label;
+      document.getElementById('riskTextTop').textContent = risk.message;
       document.getElementById('streakText').textContent = streak.side ? meta[streak.side].kr + ' ' + streak.count + '줄' : '대기';
+
+      renderPatternBalls(analysis.pattern);
+      document.getElementById('patternP').textContent = analysis.playerRate + '%';
+      document.getElementById('patternB').textContent = analysis.bankerRate + '%';
+      document.getElementById('patternSamples').textContent = analysis.samples;
+      document.getElementById('patternTier').textContent = analysis.tier;
+      document.getElementById('recommendText').textContent = analysis.pick ? meta[analysis.pick].kr + ' (' + meta[analysis.pick].label + ')' : '대기';
+      document.getElementById('recommendText').className = analysis.pick ? meta[analysis.pick].text : '';
+      document.getElementById('recommendConfidence').textContent = analysis.confidence + '%';
+      document.getElementById('riskMeter').style.width = risk.value + '%';
+
+      const history = document.getElementById('history');
+      history.innerHTML = '';
+      rounds.slice(-30).forEach(r => history.appendChild(historyChip(r)));
+      if (!rounds.length) history.innerHTML = '<span class="muted">아직 입력된 기록이 없습니다.</span>';
 
       renderBigRoad(columns);
       renderDerived('bigEye', derivedRoad(columns, 1));
       renderDerived('smallRoad', derivedRoad(columns, 2));
       renderDerived('cockroach', derivedRoad(columns, 3));
-      renderPatternBalls(pattern.pattern);
-
-      document.getElementById('patternP').textContent = pattern.playerRate + '%';
-      document.getElementById('patternB').textContent = pattern.bankerRate + '%';
-      document.getElementById('patternSamples').textContent = pattern.samples;
-      document.getElementById('recommendText').textContent = pattern.pick ? meta[pattern.pick].kr + ' (' + meta[pattern.pick].label + ')' : '대기';
-      document.getElementById('recommendText').className = pattern.pick ? meta[pattern.pick].text : '';
-      document.getElementById('recommendConfidence').textContent = pattern.confidence + '%';
-      document.getElementById('flowScore').textContent = flow.score;
-      document.getElementById('riskMeter').style.width = risk.value + '%';
-      document.getElementById('flowTextTop').textContent = flow.label + ' · ' + flow.detail;
-      document.getElementById('riskLabelTop').textContent = risk.label;
-      document.getElementById('riskTextTop').textContent = risk.message;
-
-      const history = document.getElementById('history'); history.innerHTML = '';
-      rounds.slice(-30).forEach(r => history.appendChild(historyChip(r)));
-      if (!rounds.length) history.innerHTML = '<span class="muted">아직 입력된 기록이 없습니다.</span>';
     }
 
     function saveData() {
-      const data = { app: 'baccarat-analyzer-pro-dark-v2', exportedAt: new Date().toISOString(), rounds };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const data = { app:'baccarat-analyzer-composite-v3', exportedAt:new Date().toISOString(), rounds };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'baccarat-record-' + new Date().toISOString().slice(0,10) + '.json'; a.click(); URL.revokeObjectURL(url);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'baccarat-record-' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     function loadData(event) {
-      const file = event.target.files[0]; if (!file) return;
+      const file = event.target.files[0];
+      if (!file) return;
       const reader = new FileReader();
       reader.onload = function() {
         try {
           const text = String(reader.result);
           let parsed;
-          try { parsed = JSON.parse(text); }
-          catch { parsed = text; }
-
+          try { parsed = JSON.parse(text); } catch(e) { parsed = text; }
           const loaded = normalizeRounds(parsed);
           if (!loaded.length) throw new Error('invalid');
-
           rounds = loaded;
           saveToBrowser();
           render();
           alert('기록 ' + loaded.length + '개를 불러왔고 자동 저장했습니다.');
-        } catch (e) {
-          alert('불러오기 실패: 기록 파일 형식을 인식하지 못했습니다. JSON, CSV, TXT 형식의 P/B/T 기록을 지원합니다.');
+        } catch(e) {
+          alert('불러오기 실패: JSON, CSV, TXT 형식의 P/B/T 기록을 확인해주세요.');
         }
       };
-      reader.readAsText(file); event.target.value = '';
+      reader.readAsText(file);
+      event.target.value = '';
     }
 
-    loadFromBrowser();
-    render();
+    function bindEvents() {
+      document.getElementById('btnPlayer').addEventListener('click', () => addRound('PLAYER'));
+      document.getElementById('btnBanker').addEventListener('click', () => addRound('BANKER'));
+      document.getElementById('btnTie').addEventListener('click', () => addRound('TIE'));
+      document.getElementById('playerPairBtn').addEventListener('click', () => { playerPair = !playerPair; render(); });
+      document.getElementById('bankerPairBtn').addEventListener('click', () => { bankerPair = !bankerPair; render(); });
+      document.getElementById('btnUndo').addEventListener('click', undo);
+      document.getElementById('btnReset').addEventListener('click', resetAll);
+      document.getElementById('btnSave').addEventListener('click', saveData);
+      document.getElementById('btnLoad').addEventListener('click', () => document.getElementById('fileInput').click());
+      document.getElementById('fileInput').addEventListener('change', loadData);
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      loadFromBrowser();
+      bindEvents();
+      render();
+    });
   </script>
 </body>
 </html>
