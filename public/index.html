@@ -84,6 +84,24 @@
     .ring { width:17px; height:17px; border-radius:50%; border:3px solid #2563eb; background:rgba(8,12,18,.95); }
     .ring.red { border-color:#dc2626; }
     .pair-blue, .pair-red { position:absolute; width:9px; height:9px; border-radius:50%; border:1px solid rgba(255,255,255,.9); z-index:2; }
+    .tie-badge {
+      position:absolute;
+      right:2px;
+      bottom:2px;
+      min-width:14px;
+      height:14px;
+      padding:0 3px;
+      border-radius:999px;
+      background:#16a34a;
+      color:#fff;
+      font-size:9px;
+      font-weight:900;
+      line-height:14px;
+      text-align:center;
+      border:1px solid rgba(255,255,255,.9);
+      box-shadow:0 0 8px rgba(34,197,94,.75);
+      z-index:3;
+    }
     .pair-blue { left:3px; bottom:3px; background:#2563eb; box-shadow:0 0 8px #2563eb; }
     .pair-red { right:3px; top:3px; background:#dc2626; box-shadow:0 0 8px #dc2626; }
     .history-row { display:flex; gap:6px; overflow-x:auto; padding:8px 0 2px; min-height:36px; }
@@ -215,15 +233,39 @@
     }
 
     function bigRoadColumns(source) {
-      const main = getMainResults(source);
+      const data = source || rounds;
       const columns = [];
       let current = [];
-      let last = null;
-      main.forEach(round => {
-        if (!last || round.result === last) current.push(round);
-        else { columns.push(current); current = [round]; }
-        last = round.result;
+      let lastSide = null;
+      let lastMainRound = null;
+
+      data.forEach(original => {
+        const round = Object.assign({ tieCount: 0 }, original);
+
+        if (round.result === 'TIE') {
+          if (lastMainRound) {
+            lastMainRound.tieCount = (lastMainRound.tieCount || 0) + 1;
+            if (round.playerPair) lastMainRound.playerPair = true;
+            if (round.bankerPair) lastMainRound.bankerPair = true;
+          } else {
+            round.tieCount = 1;
+            current.push(round);
+            lastMainRound = round;
+          }
+          return;
+        }
+
+        if (!lastSide || round.result === lastSide) {
+          current.push(round);
+        } else {
+          if (current.length) columns.push(current);
+          current = [round];
+        }
+
+        lastSide = round.result;
+        lastMainRound = round;
       });
+
       if (current.length) columns.push(current);
       return columns;
     }
@@ -252,7 +294,29 @@
     }
 
     function bigEyeResultRoad(source) {
-      return getMainResults(source).map(r => r.result === 'PLAYER' ? 'P' : 'B');
+      return (source || rounds).map(r => {
+        if (r.result === 'PLAYER') return 'P';
+        if (r.result === 'BANKER') return 'B';
+        if (r.result === 'TIE') return 'T';
+        return null;
+      }).filter(Boolean);
+    }
+
+    function derivedRoadWithTies(source, columns, offset) {
+      const base = derivedRoad(columns, offset);
+      const out = [];
+      let baseIndex = 0;
+      (source || rounds).forEach(r => {
+        if (r.result === 'TIE') {
+          out.push('T');
+        } else if (r.result === 'PLAYER' || r.result === 'BANKER') {
+          if (baseIndex < base.length) {
+            out.push(base[baseIndex]);
+            baseIndex++;
+          }
+        }
+      });
+      return out;
     }
 
     function roadShapeKey(source) {
@@ -425,8 +489,17 @@
           const cell = document.createElement('div'); cell.className = 'cell';
           const round = col[row];
           if (round) {
-            const disc = document.createElement('div'); disc.className = 'big-disc ' + meta[round.result].className; disc.textContent = meta[round.result].label;
-            cell.appendChild(disc); addPairDots(cell, round);
+            const disc = document.createElement('div');
+            disc.className = 'big-disc ' + meta[round.result].className;
+            disc.textContent = meta[round.result].label;
+            cell.appendChild(disc);
+            addPairDots(cell, round);
+            if (round.tieCount && round.result !== 'TIE') {
+              const tie = document.createElement('span');
+              tie.className = 'tie-badge';
+              tie.textContent = round.tieCount > 1 ? 'T' + round.tieCount : 'T';
+              cell.appendChild(tie);
+            }
           }
           el.appendChild(cell);
         }
@@ -444,10 +517,17 @@
         const cell = document.createElement('div');
         cell.className = 'cell';
         const holder = document.createElement('div');
-        holder.className = 'derived-disc';
-        const ring = document.createElement('div');
-        ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
-        holder.appendChild(ring);
+
+        if (mark === 'T') {
+          holder.className = 'derived-disc disc-tie';
+          holder.textContent = 'T';
+        } else {
+          holder.className = 'derived-disc';
+          const ring = document.createElement('div');
+          ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
+          holder.appendChild(ring);
+        }
+
         cell.appendChild(holder);
         el.appendChild(cell);
       });
@@ -464,7 +544,7 @@
         const cell = document.createElement('div');
         cell.className = 'cell';
         const disc = document.createElement('div');
-        disc.className = 'derived-disc ' + (mark === 'P' ? 'disc-player' : 'disc-banker');
+        disc.className = 'derived-disc ' + (mark === 'P' ? 'disc-player' : mark === 'B' ? 'disc-banker' : 'disc-tie');
         disc.textContent = mark;
         cell.appendChild(disc);
         el.appendChild(cell);
@@ -526,8 +606,8 @@
 
       renderBigRoad(columns);
       renderBigEyeResultRoad('bigEye', bigEyeResultRoad(rounds));
-      renderDerived('smallRoad', derivedRoad(columns, 2));
-      renderDerived('cockroach', derivedRoad(columns, 3));
+      renderDerived('smallRoad', derivedRoadWithTies(rounds, columns, 2));
+      renderDerived('cockroach', derivedRoadWithTies(rounds, columns, 3));
     }
 
     function saveData() {
