@@ -1,403 +1,74 @@
-import React, { useMemo, useRef, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Download, Upload, RotateCcw, Undo2, BarChart3, ShieldAlert, Activity } from "lucide-react";
-
-const RESULT_META = {
-  PLAYER: { label: "플", full: "Player", color: "bg-blue-600", text: "text-blue-600", border: "border-blue-600" },
-  BANKER: { label: "뱅", full: "Banker", color: "bg-red-600", text: "text-red-600", border: "border-red-600" },
-  TIE: { label: "타이", full: "Tie", color: "bg-green-600", text: "text-green-600", border: "border-green-600" },
-};
-
-function createRound(result, options = {}) {
-  return {
-    id: crypto.randomUUID(),
-    result,
-    playerPair: Boolean(options.playerPair),
-    bankerPair: Boolean(options.bankerPair),
-    createdAt: new Date().toISOString(),
-  };
-}
-
-function getMainResults(rounds) {
-  return rounds.filter((r) => r.result === "PLAYER" || r.result === "BANKER");
-}
-
-function getRecentWinRate(rounds, size = 50) {
-  const main = getMainResults(rounds).slice(-size);
-  const total = main.length;
-  const player = main.filter((r) => r.result === "PLAYER").length;
-  const banker = main.filter((r) => r.result === "BANKER").length;
-  return {
-    total,
-    player,
-    banker,
-    playerRate: total ? Math.round((player / total) * 100) : 0,
-    bankerRate: total ? Math.round((banker / total) * 100) : 0,
-  };
-}
-
-function getStreakInfo(rounds) {
-  const main = getMainResults(rounds);
-  if (!main.length) return { side: null, count: 0 };
-  const last = main[main.length - 1].result;
-  let count = 0;
-  for (let i = main.length - 1; i >= 0; i--) {
-    if (main[i].result !== last) break;
-    count++;
-  }
-  return { side: last, count };
-}
-
-function getPatternKey(rounds, length = 6) {
-  const main = getMainResults(rounds);
-  return main.slice(-length).map((r) => (r.result === "PLAYER" ? "P" : "B")).join("");
-}
-
-function analyzeNextByPattern(rounds, length = 6) {
-  const main = getMainResults(rounds);
-  if (main.length <= length) {
-    return {
-      pattern: getPatternKey(rounds, length),
-      samples: 0,
-      playerNext: 0,
-      bankerNext: 0,
-      playerRate: 0,
-      bankerRate: 0,
-      pick: null,
-      confidence: 0,
-    };
-  }
-
-  const pattern = main.slice(-length).map((r) => (r.result === "PLAYER" ? "P" : "B")).join("");
-  let playerNext = 0;
-  let bankerNext = 0;
-
-  for (let i = 0; i <= main.length - length - 1; i++) {
-    const key = main.slice(i, i + length).map((r) => (r.result === "PLAYER" ? "P" : "B")).join("");
-    if (key === pattern) {
-      const next = main[i + length]?.result;
-      if (next === "PLAYER") playerNext++;
-      if (next === "BANKER") bankerNext++;
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>바카라 최고급 분석기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      color: #111;
     }
-  }
-
-  const samples = playerNext + bankerNext;
-  const playerRate = samples ? Math.round((playerNext / samples) * 100) : 0;
-  const bankerRate = samples ? Math.round((bankerNext / samples) * 100) : 0;
-  const pick = samples === 0 ? null : playerRate >= bankerRate ? "PLAYER" : "BANKER";
-  const confidence = samples === 0 ? 0 : Math.max(playerRate, bankerRate);
-
-  return { pattern, samples, playerNext, bankerNext, playerRate, bankerRate, pick, confidence };
-}
-
-function getFlowScore(rounds) {
-  const main = getMainResults(rounds).slice(-20);
-  if (main.length < 6) return { score: 50, label: "대기", detail: "데이터 부족" };
-
-  let switches = 0;
-  let streakPower = 0;
-  for (let i = 1; i < main.length; i++) {
-    if (main[i].result !== main[i - 1].result) switches++;
-  }
-
-  const streak = getStreakInfo(main);
-  streakPower = Math.min(streak.count * 8, 35);
-
-  const switchRate = switches / Math.max(main.length - 1, 1);
-  let score = 50;
-  if (switchRate >= 0.65) score += 20;
-  if (switchRate <= 0.35) score += 20;
-  score += streakPower;
-  score = Math.max(0, Math.min(100, Math.round(score)));
-
-  let label = "보통";
-  if (score >= 80) label = "강함";
-  else if (score >= 65) label = "양호";
-  else if (score <= 45) label = "약함";
-
-  return { score, label, detail: switchRate >= 0.65 ? "퐁당 흐름 우세" : switchRate <= 0.35 ? "줄 흐름 우세" : "혼합 흐름" };
-}
-
-function getRiskLevel(rounds, patternAnalysis) {
-  const main = getMainResults(rounds);
-  const streak = getStreakInfo(rounds);
-  const recent = main.slice(-12);
-  const switches = recent.reduce((acc, cur, idx) => {
-    if (idx === 0) return acc;
-    return acc + (cur.result !== recent[idx - 1].result ? 1 : 0);
-  }, 0);
-
-  let risk = 35;
-  if (main.length < 20) risk += 25;
-  if (patternAnalysis.samples < 3) risk += 25;
-  if (patternAnalysis.confidence < 60) risk += 15;
-  if (streak.count >= 5) risk += 10;
-  if (recent.length >= 10 && switches >= 8) risk += 10;
-  risk = Math.max(0, Math.min(100, risk));
-
-  if (risk >= 75) return { value: risk, label: "높음", message: "패턴 표본이 약하거나 흐름이 과열됨" };
-  if (risk >= 50) return { value: risk, label: "중간", message: "진입은 가능하지만 보수적으로 확인" };
-  return { value: risk, label: "낮음", message: "상대적으로 안정적인 구간" };
-}
-
-function generateBigRoad(rounds) {
-  const main = getMainResults(rounds);
-  const columns = [];
-  let currentCol = [];
-  let last = null;
-
-  main.forEach((round) => {
-    if (!last || round.result === last) {
-      currentCol.push(round);
-    } else {
-      columns.push(currentCol);
-      currentCol = [round];
+    .wrap {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 16px;
     }
-    last = round.result;
-  });
-  if (currentCol.length) columns.push(currentCol);
-  return columns;
-}
-
-function generateDerivedRoad(columns, offset) {
-  const marks = [];
-  for (let col = offset; col < columns.length; col++) {
-    const current = columns[col];
-    const compare = columns[col - offset];
-    for (let row = 0; row < current.length; row++) {
-      const isRed = Boolean(compare && compare.length > row);
-      marks.push(isRed ? "R" : "B");
+    .header, .card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-bottom: 14px;
     }
-  }
-  return marks;
-}
-
-function StatBox({ title, value, sub }) {
-  return (
-    <Card className="rounded-2xl shadow-sm">
-      <CardContent className="p-4">
-        <div className="text-sm text-neutral-500">{title}</div>
-        <div className="mt-1 text-2xl font-bold">{value}</div>
-        {sub && <div className="mt-1 text-xs text-neutral-500">{sub}</div>}
-      </CardContent>
-    </Card>
-  );
-}
-
-function ResultChip({ result, small = false }) {
-  const meta = RESULT_META[result];
-  return (
-    <div className={`${small ? "h-7 w-7 text-xs" : "h-10 w-10 text-sm"} flex items-center justify-center rounded-full ${meta.color} font-bold text-white shadow-sm`}>
-      {meta.label}
-    </div>
-  );
-}
-
-function DotRoad({ title, marks }) {
-  return (
-    <Card className="rounded-2xl shadow-sm">
-      <CardContent className="p-4">
-        <div className="mb-3 font-semibold">{title}</div>
-        <div className="grid grid-cols-20 gap-1 overflow-x-auto">
-          {marks.length === 0 ? (
-            <div className="text-sm text-neutral-400">표시할 데이터가 없습니다.</div>
-          ) : (
-            marks.map((m, idx) => (
-              <div key={idx} className={`h-5 w-5 rounded-full border-2 ${m === "R" ? "border-red-500" : "border-blue-500"}`} />
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-export default function BaccaratAnalyzerRebuildV1() {
-  const [rounds, setRounds] = useState([]);
-  const [playerPair, setPlayerPair] = useState(false);
-  const [bankerPair, setBankerPair] = useState(false);
-  const fileInputRef = useRef(null);
-
-  const bigRoad = useMemo(() => generateBigRoad(rounds), [rounds]);
-  const bigEye = useMemo(() => generateDerivedRoad(bigRoad, 1), [bigRoad]);
-  const smallRoad = useMemo(() => generateDerivedRoad(bigRoad, 2), [bigRoad]);
-  const cockroach = useMemo(() => generateDerivedRoad(bigRoad, 3), [bigRoad]);
-  const recentRate = useMemo(() => getRecentWinRate(rounds, 50), [rounds]);
-  const pattern = useMemo(() => analyzeNextByPattern(rounds, 6), [rounds]);
-  const flow = useMemo(() => getFlowScore(rounds), [rounds]);
-  const risk = useMemo(() => getRiskLevel(rounds, pattern), [rounds, pattern]);
-  const streak = useMemo(() => getStreakInfo(rounds), [rounds]);
-
-  function addRound(result) {
-    setRounds((prev) => [...prev, createRound(result, { playerPair, bankerPair })]);
-    setPlayerPair(false);
-    setBankerPair(false);
-  }
-
-  function undo() {
-    setRounds((prev) => prev.slice(0, -1));
-  }
-
-  function resetAll() {
-    const ok = window.confirm("전체 기록을 삭제할까요?");
-    if (ok) setRounds([]);
-  }
-
-  function downloadData() {
-    const data = {
-      app: "baccarat-analyzer-rebuild-v1",
-      exportedAt: new Date().toISOString(),
-      rounds,
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `baccarat-record-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  function uploadData(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result));
-        const nextRounds = Array.isArray(parsed) ? parsed : parsed.rounds;
-        if (!Array.isArray(nextRounds)) throw new Error("invalid data");
-        setRounds(nextRounds);
-      } catch {
-        alert("불러오기 실패: 올바른 저장 파일이 아닙니다.");
-      }
-    };
-    reader.readAsText(file);
-    event.target.value = "";
-  }
-
-  return (
-    <div className="min-h-screen bg-neutral-100 p-4 text-neutral-900">
-      <div className="mx-auto max-w-7xl space-y-4">
-        <header className="flex flex-col justify-between gap-3 rounded-2xl bg-white p-5 shadow-sm md:flex-row md:items-center">
-          <div>
-            <h1 className="text-2xl font-black">바카라 최고급 분석기 Rebuild V1</h1>
-            <p className="mt-1 text-sm text-neutral-500">입력 기록 기반 통계 · 패턴 · 흐름 · 위험도 분석</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={undo} disabled={!rounds.length}><Undo2 className="mr-2 h-4 w-4" />되돌리기</Button>
-            <Button variant="outline" onClick={downloadData} disabled={!rounds.length}><Download className="mr-2 h-4 w-4" />저장</Button>
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()}><Upload className="mr-2 h-4 w-4" />불러오기</Button>
-            <Button variant="destructive" onClick={resetAll} disabled={!rounds.length}><RotateCcw className="mr-2 h-4 w-4" />초기화</Button>
-            <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={uploadData} />
-          </div>
-        </header>
-
-        <section className="grid gap-4 lg:grid-cols-[380px_1fr]">
-          <Card className="rounded-2xl shadow-sm">
-            <CardContent className="space-y-4 p-5">
-              <div>
-                <div className="text-lg font-bold">결과 입력</div>
-                <div className="mt-1 text-sm text-neutral-500">타이와 페어는 기록되지만 승률/패턴 계산에서는 제외됩니다.</div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <Button className="h-14 bg-blue-600 text-lg hover:bg-blue-700" onClick={() => addRound("PLAYER")}>플</Button>
-                <Button className="h-14 bg-red-600 text-lg hover:bg-red-700" onClick={() => addRound("BANKER")}>뱅</Button>
-                <Button className="h-14 bg-green-600 text-lg hover:bg-green-700" onClick={() => addRound("TIE")}>타이</Button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant={playerPair ? "default" : "outline"} onClick={() => setPlayerPair((v) => !v)}>플 페어 {playerPair ? "ON" : "OFF"}</Button>
-                <Button variant={bankerPair ? "default" : "outline"} onClick={() => setBankerPair((v) => !v)}>뱅 페어 {bankerPair ? "ON" : "OFF"}</Button>
-              </div>
-
-              <div className="rounded-xl bg-neutral-50 p-4">
-                <div className="mb-2 font-semibold">최근 기록</div>
-                <div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto">
-                  {rounds.slice(-60).map((round) => (
-                    <div key={round.id} className="relative">
-                      <ResultChip result={round.result} small />
-                      {(round.playerPair || round.bankerPair) && <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-yellow-400 ring-1 ring-white" />}
-                    </div>
-                  ))}
-                  {!rounds.length && <div className="text-sm text-neutral-400">아직 입력된 기록이 없습니다.</div>}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-4">
-            <div className="grid gap-3 md:grid-cols-4">
-              <StatBox title="전체 기록" value={`${rounds.length}판`} sub={`실계산 ${getMainResults(rounds).length}판`} />
-              <StatBox title="최근 50판 플" value={`${recentRate.playerRate}%`} sub={`${recentRate.player} / ${recentRate.total}`} />
-              <StatBox title="최근 50판 뱅" value={`${recentRate.bankerRate}%`} sub={`${recentRate.banker} / ${recentRate.total}`} />
-              <StatBox title="현재 줄" value={streak.side ? `${RESULT_META[streak.side].label} ${streak.count}줄` : "대기"} sub="타이 제외" />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="p-5">
-                  <div className="mb-3 flex items-center gap-2 font-bold"><BarChart3 className="h-5 w-5" />최근 6패턴</div>
-                  <div className="text-sm text-neutral-500">패턴</div>
-                  <div className="mt-1 text-xl font-black tracking-widest">{pattern.pattern || "------"}</div>
-                  <div className="mt-4 text-sm text-neutral-500">다음 결과 표본</div>
-                  <div className="mt-1 text-sm">플 {pattern.playerNext}회 · 뱅 {pattern.bankerNext}회 · 총 {pattern.samples}회</div>
-                  <div className="mt-4 rounded-xl bg-neutral-50 p-3">
-                    <div className="text-sm text-neutral-500">추천 방향</div>
-                    <div className={`mt-1 text-2xl font-black ${pattern.pick ? RESULT_META[pattern.pick].text : "text-neutral-400"}`}>
-                      {pattern.pick ? RESULT_META[pattern.pick].label : "대기"}
-                    </div>
-                    <div className="text-xs text-neutral-500">신뢰도 {pattern.confidence}%</div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="p-5">
-                  <div className="mb-3 flex items-center gap-2 font-bold"><Activity className="h-5 w-5" />흐름 점수</div>
-                  <div className="text-4xl font-black">{flow.score}</div>
-                  <div className="mt-1 text-sm text-neutral-500">{flow.label} · {flow.detail}</div>
-                  <div className="mt-4 h-3 overflow-hidden rounded-full bg-neutral-200">
-                    <div className="h-full rounded-full bg-neutral-900" style={{ width: `${flow.score}%` }} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="rounded-2xl shadow-sm">
-                <CardContent className="p-5">
-                  <div className="mb-3 flex items-center gap-2 font-bold"><ShieldAlert className="h-5 w-5" />위험도</div>
-                  <div className="text-4xl font-black">{risk.label}</div>
-                  <div className="mt-1 text-sm text-neutral-500">{risk.message}</div>
-                  <div className="mt-4 h-3 overflow-hidden rounded-full bg-neutral-200">
-                    <div className="h-full rounded-full bg-neutral-900" style={{ width: `${risk.value}%` }} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        <section className="grid gap-4 lg:grid-cols-2">
-          <Card className="rounded-2xl shadow-sm lg:col-span-2">
-            <CardContent className="p-4">
-              <div className="mb-3 font-semibold">원매</div>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {bigRoad.length === 0 ? <div className="text-sm text-neutral-400">표시할 데이터가 없습니다.</div> : bigRoad.map((col, colIdx) => (
-                  <div key={colIdx} className="flex min-w-10 flex-col gap-1">
-                    {col.map((round) => <ResultChip key={round.id} result={round.result} small />)}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <DotRoad title="육매" marks={bigEye} />
-          <DotRoad title="중국점" marks={smallRoad} />
-          <DotRoad title="소강로" marks={cockroach} />
-        </section>
-      </div>
-    </div>
-  );
-}
+    h1 { margin: 0; font-size: 26px; }
+    .sub { color: #666; font-size: 14px; margin-top: 6px; }
+    .grid { display: grid; gap: 14px; }
+    .grid-2 { grid-template-columns: 360px 1fr; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #222;
+      color: white;
+    }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .blue { background: #2563eb; }
+    .red { background: #dc2626; }
+    .green { background: #16a34a; }
+    .gray { background: #555; }
+    .danger { background: #991b1b; }
+    .pair-on { background: #f59e0b; color: #111; }
+    .stat-title { color: #666; font-size: 13px; }
+    .stat-value { font-size: 28px; font-weight: 900; margin-top: 6px; }
+    .stat-sub { color: #777; font-size: 12px; margin-top: 4px; }
+    .history {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: #f8f8f8;
+      padding: 10px;
+      border-radius: 12px;
+    }
+    .chip-wrap { position: relative; }
+    .chip {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
