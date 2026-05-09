@@ -9,46 +9,30 @@
     body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0f172a;color:#f8fafc}
     .wrap{max-width:1280px;margin:0 auto;padding:28px 16px 60px}
     h1{margin:0;font-size:34px;font-weight:900;letter-spacing:-.04em}
-    h2{margin:0 0 14px;font-size:20px}
-    .sub{color:#94a3b8;margin:8px 0 18px;line-height:1.5}
+    h2{margin:0 0 14px;font-size:20px}.sub{color:#94a3b8;margin:8px 0 18px;line-height:1.5}
     .notice{background:rgba(251,191,36,.11);border:1px solid rgba(251,191,36,.35);color:#fde68a;border-radius:16px;padding:12px 14px;margin-bottom:16px;font-size:14px}
-    .grid{display:grid;grid-template-columns:380px 1fr;gap:16px;align-items:start}
-    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .grid{display:grid;grid-template-columns:380px 1fr;gap:16px;align-items:start}@media(max-width:980px){.grid{grid-template-columns:1fr}}
     .card{background:#1e293b;border:1px solid #334155;border-radius:20px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.25);margin-bottom:16px}
-    .buttons{display:flex;gap:10px;flex-wrap:wrap}
-    button{border:0;border-radius:14px;padding:13px 16px;color:#fff;font-weight:800;cursor:pointer;font-size:15px;transition:.15s transform,.15s opacity}
-    button:hover{transform:translateY(-1px);opacity:.92}
+    .buttons{display:flex;gap:10px;flex-wrap:wrap}button{border:0;border-radius:14px;padding:13px 16px;color:#fff;font-weight:800;cursor:pointer;font-size:15px}
     .btnP{background:#2563eb}.btnB{background:#dc2626}.btnT{background:#059669}.btnGray{background:#475569}.btnDanger{background:#7f1d1d}.btnGold{background:#b45309}
-    .pairbox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
-    .check{display:flex;align-items:center;gap:8px;background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;color:#cbd5e1;font-weight:700}
-    .check input{width:18px;height:18px}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-    .stat{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;text-align:center}
-    .stat strong{display:block;font-size:22px}.stat span{font-size:12px;color:#94a3b8}
-    .prediction{background:#0f172a;border:1px solid #334155;border-radius:18px;padding:18px;text-align:center}
-    .predMain{font-size:44px;font-weight:950;margin:4px 0}.muted{color:#94a3b8;font-size:13px;line-height:1.45}
-    .pill{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:#0f172a;border:1px solid #334155;color:#cbd5e1;font-size:12px;margin:3px}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .tab{background:#0f172a;border:1px solid #334155;color:#cbd5e1}.tab.active{background:#334155;color:#fff}
-    .roadWrap{overflow:auto;background:#0f172a;border:1px solid #334155;border-radius:16px;padding:12px;max-height:420px}
-    .road{display:grid;grid-auto-flow:column;grid-template-rows:repeat(6,34px);grid-auto-columns:34px;gap:5px;align-items:center;justify-items:center;width:max-content;min-width:100%}
-    .cell{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;position:relative;border:2px solid rgba(255,255,255,.18)}
-    .cell.B{background:#dc2626}.cell.P{background:#2563eb}.cell.T{background:#059669}.cell.N{background:#1e293b;color:#64748b;border-color:#334155}.cell.R{background:#7c2d12}.cell.C{background:#581c87}
-    .tieMark{position:absolute;right:-4px;bottom:-4px;background:#22c55e;color:white;border-radius:999px;min-width:15px;height:15px;font-size:10px;display:flex;align-items:center;justify-content:center;border:1px solid #052e16}
-    .ppMark,.bpMark{position:absolute;width:8px;height:8px;border-radius:50%;top:-3px;border:1px solid white}.ppMark{left:-3px;background:#60a5fa}.bpMark{right:-3px;background:#f87171}
-    .list{display:flex;flex-wrap:wrap;gap:6px;max-height:190px;overflow:auto;padding-right:4px}
-    .roundChip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:7px 10px;background:#0f172a;border:1px solid #334155;font-size:13px;font-weight:800}
-    .roundChip.B{color:#fecaca}.roundChip.P{color:#bfdbfe}.roundChip.T{color:#bbf7d0}
+    .pairbox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.check{display:flex;align-items:center;gap:8px;background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;color:#cbd5e1;font-weight:700}.check input{width:18px;height:18px}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.stat{background:#0f172a;border:1px solid #334155;border-radius:14px;padding:12px;text-align:center}.stat strong{display:block;font-size:22px}.stat span{font-size:12px;color:#94a3b8}
+    .prediction{background:#0f172a;border:1px solid #334155;border-radius:18px;padding:18px;text-align:center}.predMain{font-size:42px;font-weight:950;margin:4px 0}.muted{color:#94a3b8;font-size:13px;line-height:1.45}
+    .pill{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:#0f172a;border:1px solid #334155;color:#cbd5e1;font-size:12px;margin:3px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tab{background:#0f172a;border:1px solid #334155;color:#cbd5e1}.tab.active{background:#334155;color:#fff}
+    .roadWrap{overflow:auto;background:#0f172a;border:1px solid #334155;border-radius:16px;padding:12px;max-height:420px}.road{display:grid;grid-auto-flow:column;grid-template-rows:repeat(6,34px);grid-auto-columns:34px;gap:5px;align-items:center;justify-items:center;width:max-content;min-width:100%}
+    .cell{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;position:relative;border:2px solid rgba(255,255,255,.18)}.cell.B{background:#dc2626}.cell.P{background:#2563eb}.cell.T{background:#059669}.cell.N{background:#1e293b;color:#64748b;border-color:#334155}.cell.C{background:#581c87}
+    .tieMark{position:absolute;right:-4px;bottom:-4px;background:#22c55e;color:white;border-radius:999px;min-width:15px;height:15px;font-size:10px;display:flex;align-items:center;justify-content:center;border:1px solid #052e16}.ppMark,.bpMark{position:absolute;width:8px;height:8px;border-radius:50%;top:-3px;border:1px solid white}.ppMark{left:-3px;background:#60a5fa}.bpMark{right:-3px;background:#f87171}
+    .list{display:flex;flex-wrap:wrap;gap:6px;max-height:190px;overflow:auto;padding-right:4px}.roundChip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:7px 10px;background:#0f172a;border:1px solid #334155;font-size:13px;font-weight:800}.roundChip.B{color:#fecaca}.roundChip.P{color:#bfdbfe}.roundChip.T{color:#bbf7d0}
     .smalltable{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}.smalltable th,.smalltable td{border-bottom:1px solid #334155;padding:9px 6px;text-align:left}.smalltable th{color:#94a3b8;font-weight:700}
-    .bar{height:10px;background:#334155;border-radius:999px;overflow:hidden}.fill{height:100%;border-radius:999px}.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+    .sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
   </style>
 </head>
 <body>
 <div class="wrap">
   <h1>양택조 분석기</h1>
-  <div class="sub">수동 입력 · 원매/육매/중국점 자동 UI · 과거 패턴 기반 다음 결과 예측 · 타이 승률 제외 · 페어 예측 포함</div>
-  <div class="notice">통계 기반 분석 도구입니다. 바카라 결과는 무작위성이 강하므로 예측은 참고용이며 수익이나 승률을 보장하지 않습니다.</div>
-
+  <div class="sub">수동 입력 · 원매/육매/중국점 자동 UI · 최근 6패턴 예측 · PASS 고도화 · 최근 10/20/30/50 흐름표</div>
+  <div class="notice">통계 기반 분석 도구입니다. 예측은 참고용이며 수익이나 승률을 보장하지 않습니다.</div>
   <div class="grid">
     <aside>
       <section class="card">
@@ -69,527 +53,63 @@
           <button class="btnGray" onclick="document.getElementById('importFile').click()">기록 파일 불러오기</button>
         </div>
         <input id="importFile" type="file" accept="application/json" style="display:none" onchange="importRecords(event)">
-        <div class="muted" style="margin-top:10px">페어가 나온 판은 먼저 페어 체크 후 플/뱅/타이를 누르면 됩니다. 기록 파일을 저장하면 다른 기기에서도 불러올 수 있습니다.</div>
+        <div class="muted" style="margin-top:10px">페어가 나온 판은 먼저 페어 체크 후 플/뱅/타이를 누르세요.</div>
         <div class="stats">
-          <div class="stat"><strong id="cntB">0</strong><span>뱅</span></div>
-          <div class="stat"><strong id="cntP">0</strong><span>플</span></div>
-          <div class="stat"><strong id="cntT">0</strong><span>타이</span></div>
-          <div class="stat"><strong id="cntPair">0</strong><span>페어</span></div>
+          <div class="stat"><strong id="cntB">0</strong><span>뱅</span></div><div class="stat"><strong id="cntP">0</strong><span>플</span></div><div class="stat"><strong id="cntT">0</strong><span>타이</span></div><div class="stat"><strong id="cntPair">0</strong><span>페어</span></div>
         </div>
       </section>
-
-      <section class="card">
-        <h2>최근 흐름표</h2>
-        <div id="flowTable"></div>
-      </section>
-
-      <section class="card">
-        <h2>패턴 신뢰도 등급</h2>
-        <div id="gradeBox" class="prediction"></div>
-      </section>
-
-      <section class="card">
-        <h2>최근 50판 승률</h2>
-        <div id="recentWinrate" class="prediction" style="margin-bottom:16px"></div>
-
-        <h2>다음 결과 예측</h2>
-        <div id="prediction" class="prediction"></div>
-        <div id="predTable"></div>
-      </section>
-
-      <section class="card">
-        <h2>현재 입력 기록</h2>
-        <div id="roundList" class="list"></div>
-      </section>
+      <section class="card"><h2>최근 흐름표</h2><div id="flowTable"></div></section>
+      <section class="card"><h2>패턴 신뢰도 등급</h2><div id="gradeBox" class="prediction"></div></section>
+      <section class="card"><h2>최근 50판 승률</h2><div id="recentWinrate" class="prediction"></div></section>
+      <section class="card"><h2>다음 결과 예측</h2><div id="prediction" class="prediction"></div><div id="predTable"></div></section>
+      <section class="card"><h2>현재 입력 기록</h2><div id="roundList" class="list"></div></section>
     </aside>
-
     <main>
       <section class="card">
-        <div class="sectionTitle">
-          <h2>로드맵 UI</h2>
-          <div class="tabs">
-            <button id="tabBig" class="tab active" onclick="showRoad('big')">원매</button>
-            <button id="tabSix" class="tab" onclick="showRoad('six')">육매</button>
-            <button id="tabChina" class="tab" onclick="showRoad('china')">중국점</button>
-          </div>
-        </div>
-        <div class="roadWrap"><div id="road" class="road"></div></div>
-        <div id="roadInfo" class="muted" style="margin-top:10px"></div>
+        <div class="sectionTitle"><h2>로드맵 UI</h2><div class="tabs"><button id="tabBig" class="tab active" onclick="showRoad('big')">원매</button><button id="tabSix" class="tab" onclick="showRoad('six')">육매</button><button id="tabChina" class="tab" onclick="showRoad('china')">중국점</button></div></div>
+        <div class="roadWrap"><div id="road" class="road"></div></div><div id="roadInfo" class="muted" style="margin-top:10px"></div>
       </section>
-
-      <section class="card">
-        <h2>원매/육매/중국점 패턴 분석</h2>
-        <div id="patternSummary"></div>
-      </section>
+      <section class="card"><h2>원매/육매/중국점 패턴 분석</h2><div id="patternSummary"></div></section>
     </main>
   </div>
 </div>
-
 <script>
-const KEY='yangtaekjo_baccarat_analyzer_v1';
-let activeRoad='big';
-let rounds=[];
-
+const KEY='yangtaekjo_baccarat_analyzer_v2';let activeRoad='big';let rounds=[];
 function save(){localStorage.setItem(KEY,JSON.stringify(rounds));}
-function load(){try{rounds=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{rounds=[]} if(!Array.isArray(rounds))rounds=[]; render();}
-function label(x){return x==='B'?'뱅':x==='P'?'플':x==='T'?'타이':'-'}
+function load(){try{rounds=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){rounds=[]}if(!Array.isArray(rounds))rounds=[];render();}
+function label(x){return x==='B'?'뱅':x==='P'?'플':x==='T'?'타이':x==='C'?'점':'-'}
 function fullLabel(x){return x==='B'?'Banker':x==='P'?'Player':x==='T'?'Tie':x==='PP'?'Player Pair':x==='BP'?'Banker Pair':x==='PAIR'?'Any Pair':'PASS'}
-function color(x){return x==='B'?'#dc2626':x==='P'?'#2563eb':x==='T'?'#059669':x==='PP'?'#60a5fa':x==='BP'?'#f87171':x==='PAIR'?'#a78bfa':'#64748b'}
-function pct(v,t){return t?((v/t)*100).toFixed(1)+'%':'0.0%'}
+function color(x){return x==='B'?'#dc2626':x==='P'?'#2563eb':x==='T'?'#059669':x==='PP'?'#60a5fa':x==='BP'?'#f87171':x==='PAIR'?'#a78bfa':'#94a3b8'}
 function nonTieOutcomes(){return rounds.map(r=>r.o).filter(x=>x==='B'||x==='P')}
-
-function addRound(o){
-  rounds.push({
-    o,
-    pp:document.getElementById('ppair').checked,
-    bp:document.getElementById('bpair').checked,
-    t:Date.now()
-  });
-  document.getElementById('ppair').checked=false;
-  document.getElementById('bpair').checked=false;
-  save();render();
-}
+function addRound(o){rounds.push({o,pp:ppair.checked,bp:bpair.checked,t:Date.now()});ppair.checked=false;bpair.checked=false;save();render();}
 function undoLast(){rounds.pop();save();render();}
 function clearAll(){if(prompt('전체 초기화하려면 “초기화” 입력')!=='초기화')return;rounds=[];save();render();}
-
-function exportRecords(){
-  const data={
-    app:'양택조 분석기',
-    version:1,
-    exportedAt:new Date().toISOString(),
-    rounds
-  };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  const date=new Date().toISOString().slice(0,10);
-  a.href=url;
-  a.download=`yangtaekjo-records-${date}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-function importRecords(event){
-  const file=event.target.files[0];
-  if(!file)return;
-
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try{
-      const data=JSON.parse(reader.result);
-      const imported=Array.isArray(data)?data:data.rounds;
-      if(!Array.isArray(imported))throw new Error('기록 배열이 없습니다.');
-
-      const cleaned=imported
-        .map(r=>({
-          o:r.o,
-          pp:!!r.pp,
-          bp:!!r.bp,
-          t:r.t||Date.now()
-        }))
-        .filter(r=>['B','P','T'].includes(r.o));
-
-      if(!cleaned.length){
-        alert('불러올 수 있는 기록이 없습니다.');
-        return;
-      }
-
-      const mode=confirm('확인을 누르면 기존 기록에 이어붙입니다.
-취소를 누르면 기존 기록을 지우고 파일 기록으로 교체합니다.');
-      rounds=mode?[...rounds,...cleaned]:cleaned;
-      save();
-      render();
-      alert(`기록 ${cleaned.length}개 불러오기 완료`);
-    }catch(e){
-      alert('기록 파일을 불러오지 못했습니다: '+e.message);
-    }finally{
-      event.target.value='';
-    }
-  };
-  reader.readAsText(file);
-}
 function showRoad(type){activeRoad=type;renderRoad();}
-
-function buildBigRoad(){
-  const cols=[];
-  let col=-1,row=0,last=null;
-  const pendingTies=[];
-  rounds.forEach(r=>{
-    if(r.o==='T'){
-      if(col>=0&&cols[col]&&cols[col][row]) cols[col][row].ties=(cols[col][row].ties||0)+1;
-      else pendingTies.push(r);
-      return;
-    }
-    if(r.o!==last){col++;row=0;cols[col]=cols[col]||[];}
-    else{row++; if(row>5){col++;row=5;cols[col]=cols[col]||[];}}
-    cols[col][row]={type:r.o,pp:r.pp,bp:r.bp,ties:0};
-    if(pendingTies.length){cols[col][row].ties+=pendingTies.length;pendingTies.length=0;}
-    last=r.o;
-  });
-  if(!cols.length&&pendingTies.length){cols[0]=[{type:'T',ties:pendingTies.length,pp:false,bp:false}];}
-  return cols;
-}
-
-function buildSixRoad(){
-  const seq=nonTieOutcomes();
-  const cells=[];
-  for(let i=0;i<seq.length;i++){
-    const start=Math.max(0,i-5);
-    const recent=seq.slice(start,i+1);
-    const b=recent.filter(x=>x==='B').length;
-    const p=recent.filter(x=>x==='P').length;
-    let type='N';
-    if(recent.length>=3){
-      if(b>p)type='B';
-      else if(p>b)type='P';
-      else type='T';
-    }
-    cells.push({type,text:recent.length});
-  }
-  return toColumns(cells);
-}
-
-function buildChinaRoad(){
-  const seq=nonTieOutcomes();
-  const cells=[];
-  for(let i=1;i<seq.length;i++){
-    const same=seq[i]===seq[i-1];
-    const three=i>=2 && seq[i]===seq[i-2];
-    const type=same?'B':three?'C':'P';
-    cells.push({type,text:same?'연':three?'점':'꺾'});
-  }
-  return toColumns(cells);
-}
-
-function toColumns(cells){
-  const cols=[];
-  cells.forEach((c,i)=>{
-    const col=Math.floor(i/6);const row=i%6;
-    cols[col]=cols[col]||[];cols[col][row]=c;
-  });
-  return cols;
-}
-
-function drawRoad(cols){
-  const road=document.getElementById('road');
-  road.innerHTML='';
-  const totalCols=Math.max(cols.length,18);
-  for(let c=0;c<totalCols;c++){
-    for(let r=0;r<6;r++){
-      const item=cols[c]?.[r];
-      const div=document.createElement('div');
-      if(!item){div.className='cell N';div.textContent='';}
-      else{
-        div.className='cell '+item.type;
-        div.textContent=item.text||label(item.type);
-        if(item.ties){const m=document.createElement('span');m.className='tieMark';m.textContent=item.ties;div.appendChild(m);}
-        if(item.pp){const m=document.createElement('span');m.className='ppMark';div.appendChild(m);}
-        if(item.bp){const m=document.createElement('span');m.className='bpMark';div.appendChild(m);}
-      }
-      road.appendChild(div);
-    }
-  }
-}
-
-function makeSymbolSeq(kind){
-  if(kind==='big')return rounds.map(r=>r.o);
-  if(kind==='six'){
-    const seq=nonTieOutcomes();
-    return seq.map((_,i)=>{
-      const recent=seq.slice(Math.max(0,i-5),i+1);
-      const b=recent.filter(x=>x==='B').length;
-      const p=recent.filter(x=>x==='P').length;
-      return b>p?'B':p>b?'P':'T';
-    });
-  }
-  const seq=nonTieOutcomes();
-  const out=[];
-  for(let i=1;i<seq.length;i++)out.push(seq[i]===seq[i-1]?'B':(i>=2&&seq[i]===seq[i-2]?'C':'P'));
-  return out;
-}
-
-function predictFromSeq(seq,targets,patternLen=6){
-  if(seq.length<patternLen+1)return {counts:Object.fromEntries(targets.map(t=>[t,0])),total:0,best:null,confidence:0,found:0};
-  const counts=Object.fromEntries(targets.map(t=>[t,0]));
-  const pattern=seq.slice(-patternLen).join('');
-  let found=0;
-  for(let i=0;i<=seq.length-patternLen-1;i++){
-    const p=seq.slice(i,i+patternLen).join('');
-    const next=seq[i+patternLen];
-    if(p===pattern && counts[next]!==undefined){
-      const weight=1+(i/Math.max(1,seq.length))*0.7;
-      counts[next]+=weight;found++;
-    }
-  }
-  const total=Object.values(counts).reduce((a,b)=>a+b,0);
-  const best=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
-  return {counts,total,best,confidence:total?counts[best]/total*100:0,found};
-}
-
-function predictPairs(){
-  const pairSeq=rounds.map(r=>r.pp&&r.bp?'PAIR':r.pp?'PP':r.bp?'BP':'NO');
-  const ppSeq=rounds.map(r=>r.pp?'PP':'NO');
-  const bpSeq=rounds.map(r=>r.bp?'BP':'NO');
-  const any=predictFromSeq(pairSeq,['PAIR','PP','BP','NO'],4);
-  const pp=predictFromSeq(ppSeq,['PP','NO'],4);
-  const bp=predictFromSeq(bpSeq,['BP','NO'],4);
-  return {any,pp,bp};
-}
-
-function getFlowStats(size){
-  const recent=rounds.slice(-size);
-  const valid=recent.filter(r=>r.o==='B'||r.o==='P');
-  const b=valid.filter(r=>r.o==='B').length;
-  const p=valid.filter(r=>r.o==='P').length;
-  const total=b+p;
-  const leader=total===0?'PASS':b>p?'B':p>b?'P':'MIX';
-  const rate=total===0?0:leader==='B'?b/total*100:leader==='P'?p/total*100:50;
-  const gap=Math.abs(b-p);
-  return {size,b,p,total,leader,rate,gap};
-}
-
-function getFlowConflict(){
-  const flows=[10,20,30,50].map(getFlowStats).filter(x=>x.total>=6);
-  const leaders=[...new Set(flows.map(x=>x.leader).filter(x=>x==='B'||x==='P'))];
-  return {
-    flows,
-    conflict:leaders.length>=2,
-    mixed:flows.some(x=>x.leader==='MIX'||x.gap<=1),
-    leaders
-  };
-}
-
-function getPatternGrade(pred){
-  const found=pred.noTie.found;
-  const conf=pred.confidence;
-
-  if(pred.best==='PASS'){
-    return {grade:'PASS',text:'진입 보류',detail:pred.reason,color:'#94a3b8'};
-  }
-  if(found>=10&&conf>=65){
-    return {grade:'A',text:'강한 패턴',detail:'동일 패턴 10회 이상 + 신뢰도 65% 이상',color:'#22c55e'};
-  }
-  if(found>=6&&conf>=60){
-    return {grade:'B',text:'보통 이상',detail:'동일 패턴 6회 이상 + 신뢰도 60% 이상',color:'#eab308'};
-  }
-  if(found>=3&&conf>=55){
-    return {grade:'C',text:'약한 참고',detail:'동일 패턴 3회 이상 + 신뢰도 55% 이상',color:'#f97316'};
-  }
-  return {grade:'PASS',text:'표본 부족',detail:'동일 패턴 표본이 부족해 PASS 권장',color:'#94a3b8'};
-}
-
-function getPassRisk(score, noTie, confidence){
-  const reasons=[];
-  const flow=getFlowConflict();
-  const gap=Math.abs(score.B-score.P);
-
-  if(noTie.found<3)reasons.push('동일 패턴 표본 3회 미만');
-  if(gap<1.2)reasons.push('플/뱅 점수 차이 작음');
-  if(confidence<55)reasons.push('신뢰도 55% 미만');
-  if(flow.conflict)reasons.push('최근 10/20/30/50 흐름 충돌');
-  if(flow.mixed)reasons.push('최근 흐름 혼전');
-
-  const last=rounds[rounds.length-1];
-  if(last&&last.o==='T')reasons.push('타이 직후 구간');
-  if(last&&(last.pp||last.bp))reasons.push('페어 직후 구간');
-
-  return {
-    pass:reasons.length>0,
-    reasons,
-    flow
-  };
-}
-
-function combinedPrediction(){
-  const raw=rounds.map(r=>r.o);
-  const pb=nonTieOutcomes();
-  const big=predictFromSeq(raw,['B','P','T'],6);
-  const noTie=predictFromSeq(pb,['B','P'],6);
-  const six=predictFromSeq(makeSymbolSeq('six'),['B','P','T'],6);
-  const china=predictFromSeq(makeSymbolSeq('china'),['B','P','C'],6);
-  const pair=predictPairs();
-
-  const score={B:0,P:0,T:0};
-  if(big.total){score.B+=big.counts.B||0;score.P+=big.counts.P||0;score.T+=big.counts.T||0;}
-  if(noTie.total){score.B+=(noTie.counts.B||0)*1.35;score.P+=(noTie.counts.P||0)*1.35;}
-  if(six.total){score.B+=(six.counts.B||0)*.7;score.P+=(six.counts.P||0)*.7;}
-  if(china.total){score.B+=(china.counts.B||0)*.45;score.P+=(china.counts.P||0)*.45;}
-
-  const winTotal=score.B+score.P;
-  let best='PASS',confidence=0,reason='데이터 부족';
-
-  if(winTotal>0){
-    best=score.B>=score.P?'B':'P';
-    confidence=score[best]/winTotal*100;
-    reason='원매/육매/중국점 과거 패턴 종합';
-  }
-
-  const risk=getPassRisk(score,noTie,confidence);
-  if(risk.pass){
-    best='PASS';
-    reason=risk.reasons.join(', ');
-  }
-
-  const tieRate=big.total?(big.counts.T||0)/big.total*100:0;
-  const pairBest=pair.pp.total&&pair.pp.best==='PP'?'PP':pair.bp.total&&pair.bp.best==='BP'?'BP':pair.any.best==='PAIR'?'PAIR':null;
-
-  const result={best,confidence,reason,score,big,noTie,six,china,pair,tieRate,pairBest,risk};
-  result.grade=getPatternGrade(result);
-  return result;
-}
-
-function renderRecentWinrate(){
-  const recent=rounds.slice(-50);
-
-  const valid=recent.filter(r=>r.o==='B'||r.o==='P');
-
-  const b=valid.filter(r=>r.o==='B').length;
-  const p=valid.filter(r=>r.o==='P').length;
-
-  const total=b+p;
-
-  let winner='혼전';
-  let rate='0.0';
-  let colorCode='#94a3b8';
-
-  if(total>0){
-    if(b>p){
-      winner='뱅커 우세';
-      rate=((b/total)*100).toFixed(1);
-      colorCode='#dc2626';
-    }else if(p>b){
-      winner='플레이어 우세';
-      rate=((p/total)*100).toFixed(1);
-      colorCode='#2563eb';
-    }else{
-      winner='혼전 구간';
-      rate='50.0';
-    }
-  }
-
-  document.getElementById('recentWinrate').innerHTML=`
-    <div class="muted">최근 50판 기준 (타이/페어 제외)</div>
-    <div class="predMain" style="color:${colorCode}">${winner}</div>
-    <div class="muted">플 ${p} / 뱅 ${b} / 승률 ${rate}%</div>
-  `;
-}
-
-function renderFlowTable(){
-  const rows=[10,20,30,50].map(getFlowStats);
-  flowTable.innerHTML=`
-    <table class="smalltable">
-      <thead><tr><th>구간</th><th>플</th><th>뱅</th><th>우세</th><th>승률</th></tr></thead>
-      <tbody>
-        ${rows.map(r=>`<tr>
-          <td>최근 ${r.size}판</td>
-          <td>${r.p}</td>
-          <td>${r.b}</td>
-          <td>${r.leader==='B'?'뱅커':r.leader==='P'?'플레이어':r.leader==='MIX'?'혼전':'-'}</td>
-          <td>${r.total?r.rate.toFixed(1)+'%':'-'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table>
-    <div class="muted" style="margin-top:8px">타이/페어는 흐름 승률에서 제외됩니다. 구간별 방향이 충돌하면 PASS가 강화됩니다.</div>
-  `;
-}
-
-function renderGradeBox(){
-  const p=combinedPrediction();
-  gradeBox.innerHTML=`
-    <div class="muted">현재 패턴 등급</div>
-    <div class="predMain" style="color:${p.grade.color}">${p.grade.grade}</div>
-    <div class="muted">${p.grade.text} / ${p.grade.detail}</div>
-  `;
-}
-
-function renderPrediction(){
-  const p=combinedPrediction();
-  const box=document.getElementById('prediction');
-  if(rounds.length<8){
-    box.innerHTML=`<div class="muted">분석 대기</div><div class="predMain">-</div><div class="muted">최소 8판 이상 입력하면 예측이 시작됩니다.</div>`;
-  }else if(p.best==='PASS'){
-    box.innerHTML=`<div class="muted">추천 보류</div><div class="predMain">PASS</div><div class="muted">${p.reason}</div>`;
-  }else{
-    const pairText=p.pairBest?` / 페어 후보: ${fullLabel(p.pairBest)}`:'';
-    box.innerHTML=`<div class="muted">다음 추천</div><div class="predMain" style="color:${color(p.best)}">${fullLabel(p.best)}</div><div class="muted">신뢰도 ${p.confidence.toFixed(1)}% / ${p.reason}${pairText}</div>`;
-  }
-
-  document.getElementById('predTable').innerHTML=`
-    <table class="smalltable">
-      <thead><tr><th>항목</th><th>예측/비율</th><th>설명</th></tr></thead>
-      <tbody>
-        <tr><td>플/뱅</td><td>${p.best==='PASS'?'PASS':fullLabel(p.best)} ${p.confidence.toFixed(1)}%</td><td>타이 제외 승률 기준</td></tr>
-        <tr><td>타이</td><td>${p.tieRate.toFixed(1)}%</td><td>승률에는 미포함, 후보로만 표시</td></tr>
-        <tr><td>플레이어 페어</td><td>${p.pair.pp.confidence.toFixed(1)}%</td><td>${p.pair.pp.best==='PP'?'출현 후보':'낮음'}</td></tr>
-        <tr><td>뱅커 페어</td><td>${p.pair.bp.confidence.toFixed(1)}%</td><td>${p.pair.bp.best==='BP'?'출현 후보':'낮음'}</td></tr>
-      </tbody>
-    </table>`;
-}
-
-function renderRoad(){
-  document.getElementById('tabBig').classList.toggle('active',activeRoad==='big');
-  document.getElementById('tabSix').classList.toggle('active',activeRoad==='six');
-  document.getElementById('tabChina').classList.toggle('active',activeRoad==='china');
-  if(activeRoad==='big'){
-    drawRoad(buildBigRoad());
-    roadInfo.textContent='원매: 플/뱅 흐름을 세로로 이어 그리고, 타이는 초록 숫자, 페어는 작은 점으로 표시합니다.';
-  }else if(activeRoad==='six'){
-    drawRoad(buildSixRoad());
-    roadInfo.textContent='육매: 최근 6개 플/뱅 흐름의 우세 방향을 요약해 표시합니다.';
-  }else{
-    drawRoad(buildChinaRoad());
-    roadInfo.textContent='중국점: 연속/꺾임/반복 흐름을 단순화한 패턴 점수판입니다.';
-  }
-}
-
-function renderSummary(){
-  const p=combinedPrediction();
-  const rows=[
-    ['원매',p.big.best,p.big.confidence,p.big.found],
-    ['육매',p.six.best,p.six.confidence,p.six.found],
-    ['중국점',p.china.best,p.china.confidence,p.china.found],
-    ['타이 제외 플/뱅',p.noTie.best,p.noTie.confidence,p.noTie.found]
-  ];
-  patternSummary.innerHTML=`
-    <div>
-      <span class="pill">총 입력 ${rounds.length}판</span>
-      <span class="pill">타이 제외 ${nonTieOutcomes().length}판</span>
-      <span class="pill">타이는 승률 계산 제외</span>
-    </div>
-    <table class="smalltable">
-      <thead><tr><th>분석 종류</th><th>후보</th><th>신뢰도</th><th>과거 동일 패턴</th></tr></thead>
-      <tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${fullLabel(r[1])}</td><td>${r[2].toFixed(1)}%</td><td>${r[3]}회</td></tr>`).join('')}</tbody>
-    </table>`;
-}
-
-function renderList(){
-  roundList.innerHTML=rounds.slice(-80).map((r,i)=>{
-    const idx=rounds.length-Math.min(rounds.length,80)+i+1;
-    const pairs=[];if(r.pp)pairs.push('P페어');if(r.bp)pairs.push('B페어');
-    return `<span class="roundChip ${r.o}">${idx}. ${label(r.o)}${pairs.length?' · '+pairs.join('/') : ''}</span>`;
-  }).join('')||'<span class="muted">아직 입력된 결과가 없습니다.</span>';
-}
-
-function renderStats(){
-  cntB.textContent=rounds.filter(r=>r.o==='B').length;
-  cntP.textContent=rounds.filter(r=>r.o==='P').length;
-  cntT.textContent=rounds.filter(r=>r.o==='T').length;
-  cntPair.textContent=rounds.filter(r=>r.pp||r.bp).length;
-}
-
-function render(){
-  renderStats();
-  renderFlowTable();
-  renderGradeBox();
-  renderRecentWinrate();
-  renderList();
-  renderRoad();
-  renderPrediction();
-  renderSummary();
-}
-
+function exportRecords(){const data={app:'양택조 분석기',version:2,exportedAt:new Date().toISOString(),rounds};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='yangtaekjo-records-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}
+function importRecords(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(){try{const data=JSON.parse(reader.result);const imported=Array.isArray(data)?data:data.rounds;if(!Array.isArray(imported))throw new Error('기록 배열 없음');const cleaned=imported.map(r=>({o:r.o,pp:!!r.pp,bp:!!r.bp,t:r.t||Date.now()})).filter(r=>['B','P','T'].includes(r.o));if(!cleaned.length){alert('불러올 기록이 없습니다.');return}rounds=confirm('확인=기존 기록에 이어붙이기
+취소=파일 기록으로 교체')?[...rounds,...cleaned]:cleaned;save();render();alert('기록 '+cleaned.length+'개 불러오기 완료');}catch(e){alert('파일 오류: '+e.message)}finally{event.target.value=''}};reader.readAsText(file);}
+function buildBigRoad(){const cols=[];let col=-1,row=0,last=null,pending=0;rounds.forEach(r=>{if(r.o==='T'){if(col>=0&&cols[col]&&cols[col][row])cols[col][row].ties=(cols[col][row].ties||0)+1;else pending++;return}if(r.o!==last){col++;row=0;cols[col]=cols[col]||[]}else{row++;if(row>5){col++;row=5;cols[col]=cols[col]||[]}}cols[col][row]={type:r.o,pp:r.pp,bp:r.bp,ties:pending};pending=0;last=r.o});if(!cols.length&&pending)cols[0]=[{type:'T',ties:pending}];return cols;}
+function toColumns(cells){const cols=[];cells.forEach((c,i)=>{const col=Math.floor(i/6),row=i%6;cols[col]=cols[col]||[];cols[col][row]=c});return cols;}
+function buildSixRoad(){const seq=nonTieOutcomes();return toColumns(seq.map((_,i)=>{const recent=seq.slice(Math.max(0,i-5),i+1);const b=recent.filter(x=>x==='B').length,p=recent.filter(x=>x==='P').length;return{type:b>p?'B':p>b?'P':'T',text:recent.length}}));}
+function buildChinaRoad(){const seq=nonTieOutcomes(),cells=[];for(let i=1;i<seq.length;i++){const same=seq[i]===seq[i-1],three=i>=2&&seq[i]===seq[i-2];cells.push({type:same?'B':three?'C':'P',text:same?'연':three?'점':'꺾'})}return toColumns(cells);}
+function drawRoad(cols){road.innerHTML='';const totalCols=Math.max(cols.length,18);for(let c=0;c<totalCols;c++){for(let r=0;r<6;r++){const item=cols[c]?.[r];const div=document.createElement('div');if(!item){div.className='cell N'}else{div.className='cell '+item.type;div.textContent=item.text||label(item.type);if(item.ties){const m=document.createElement('span');m.className='tieMark';m.textContent=item.ties;div.appendChild(m)}if(item.pp){const m=document.createElement('span');m.className='ppMark';div.appendChild(m)}if(item.bp){const m=document.createElement('span');m.className='bpMark';div.appendChild(m)}}road.appendChild(div)}}}
+function makeSymbolSeq(kind){if(kind==='big')return rounds.map(r=>r.o);if(kind==='six'){const seq=nonTieOutcomes();return seq.map((_,i)=>{const recent=seq.slice(Math.max(0,i-5),i+1);const b=recent.filter(x=>x==='B').length,p=recent.filter(x=>x==='P').length;return b>p?'B':p>b?'P':'T'})}const seq=nonTieOutcomes(),out=[];for(let i=1;i<seq.length;i++)out.push(seq[i]===seq[i-1]?'B':(i>=2&&seq[i]===seq[i-2]?'C':'P'));return out;}
+function predictFromSeq(seq,targets,patternLen=6){const counts=Object.fromEntries(targets.map(t=>[t,0]));if(seq.length<patternLen+1)return{counts,total:0,best:null,confidence:0,found:0};const pattern=seq.slice(-patternLen).join('');let found=0;for(let i=0;i<=seq.length-patternLen-1;i++){const p=seq.slice(i,i+patternLen).join(''),next=seq[i+patternLen];if(p===pattern&&counts[next]!==undefined){const w=1+(i/Math.max(1,seq.length))*0.7;counts[next]+=w;found++}}const total=Object.values(counts).reduce((a,b)=>a+b,0);const best=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;return{counts,total,best,confidence:total?counts[best]/total*100:0,found};}
+function predictPairs(){const ppSeq=rounds.map(r=>r.pp?'PP':'NO'),bpSeq=rounds.map(r=>r.bp?'BP':'NO'),anySeq=rounds.map(r=>r.pp||r.bp?'PAIR':'NO');return{pp:predictFromSeq(ppSeq,['PP','NO'],4),bp:predictFromSeq(bpSeq,['BP','NO'],4),any:predictFromSeq(anySeq,['PAIR','NO'],4)};}
+function getFlowStats(size){const recent=rounds.slice(-size),valid=recent.filter(r=>r.o==='B'||r.o==='P');const b=valid.filter(r=>r.o==='B').length,p=valid.filter(r=>r.o==='P').length,total=b+p;const leader=total===0?'PASS':b>p?'B':p>b?'P':'MIX';const rate=total===0?0:leader==='B'?b/total*100:leader==='P'?p/total*100:50;return{size,b,p,total,leader,rate,gap:Math.abs(b-p)};}
+function getFlowConflict(){const flows=[10,20,30,50].map(getFlowStats).filter(x=>x.total>=6);const leaders=[...new Set(flows.map(x=>x.leader).filter(x=>x==='B'||x==='P'))];return{flows,conflict:leaders.length>=2,mixed:flows.some(x=>x.leader==='MIX'||x.gap<=1),leaders};}
+function getPassRisk(score,noTie,confidence){const reasons=[],flow=getFlowConflict(),gap=Math.abs(score.B-score.P);if(noTie.found<3)reasons.push('동일 패턴 표본 3회 미만');if(gap<1.2)reasons.push('플/뱅 점수 차이 작음');if(confidence<55)reasons.push('신뢰도 55% 미만');if(flow.conflict)reasons.push('최근 흐름 충돌');if(flow.mixed)reasons.push('최근 흐름 혼전');const last=rounds[rounds.length-1];if(last&&last.o==='T')reasons.push('타이 직후 구간');if(last&&(last.pp||last.bp))reasons.push('페어 직후 구간');return{pass:reasons.length>0,reasons,flow};}
+function getPatternGrade(pred){if(pred.best==='PASS')return{grade:'PASS',text:'진입 보류',detail:pred.reason,color:'#94a3b8'};if(pred.noTie.found>=10&&pred.confidence>=65)return{grade:'A',text:'강한 패턴',detail:'동일 패턴 10회 이상 + 신뢰도 65% 이상',color:'#22c55e'};if(pred.noTie.found>=6&&pred.confidence>=60)return{grade:'B',text:'보통 이상',detail:'동일 패턴 6회 이상 + 신뢰도 60% 이상',color:'#eab308'};if(pred.noTie.found>=3&&pred.confidence>=55)return{grade:'C',text:'약한 참고',detail:'동일 패턴 3회 이상 + 신뢰도 55% 이상',color:'#f97316'};return{grade:'PASS',text:'표본 부족',detail:'동일 패턴 표본 부족',color:'#94a3b8'};}
+function combinedPrediction(){const raw=rounds.map(r=>r.o),pb=nonTieOutcomes();const big=predictFromSeq(raw,['B','P','T'],6),noTie=predictFromSeq(pb,['B','P'],6),six=predictFromSeq(makeSymbolSeq('six'),['B','P','T'],6),china=predictFromSeq(makeSymbolSeq('china'),['B','P','C'],6),pair=predictPairs();const score={B:0,P:0,T:0};if(big.total){score.B+=big.counts.B||0;score.P+=big.counts.P||0;score.T+=big.counts.T||0}if(noTie.total){score.B+=(noTie.counts.B||0)*1.35;score.P+=(noTie.counts.P||0)*1.35}if(six.total){score.B+=(six.counts.B||0)*.7;score.P+=(six.counts.P||0)*.7}if(china.total){score.B+=(china.counts.B||0)*.45;score.P+=(china.counts.P||0)*.45}const winTotal=score.B+score.P;let best='PASS',confidence=0,reason='데이터 부족';if(winTotal>0){best=score.B>=score.P?'B':'P';confidence=score[best]/winTotal*100;reason='원매/육매/중국점 과거 패턴 종합'}const risk=getPassRisk(score,noTie,confidence);if(risk.pass){best='PASS';reason=risk.reasons.join(', ')}const tieRate=big.total?(big.counts.T||0)/big.total*100:0;const pairBest=pair.pp.total&&pair.pp.best==='PP'?'PP':pair.bp.total&&pair.bp.best==='BP'?'BP':pair.any.total&&pair.any.best==='PAIR'?'PAIR':null;const result={best,confidence,reason,score,big,noTie,six,china,pair,tieRate,pairBest,risk};result.grade=getPatternGrade(result);return result;}
+function renderFlowTable(){const rows=[10,20,30,50].map(getFlowStats);flowTable.innerHTML='<table class="smalltable"><thead><tr><th>구간</th><th>플</th><th>뱅</th><th>우세</th><th>승률</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>최근 '+r.size+'판</td><td>'+r.p+'</td><td>'+r.b+'</td><td>'+(r.leader==='B'?'뱅커':r.leader==='P'?'플레이어':r.leader==='MIX'?'혼전':'-')+'</td><td>'+(r.total?r.rate.toFixed(1)+'%':'-')+'</td></tr>').join('')+'</tbody></table><div class="muted" style="margin-top:8px">타이/페어 제외. 흐름 충돌 시 PASS 강화.</div>';}
+function renderRecentWinrate(){const r=getFlowStats(50);let winner='혼전',rate='0.0',c='#94a3b8';if(r.total){if(r.b>r.p){winner='뱅커 우세';rate=(r.b/r.total*100).toFixed(1);c='#dc2626'}else if(r.p>r.b){winner='플레이어 우세';rate=(r.p/r.total*100).toFixed(1);c='#2563eb'}else rate='50.0'}recentWinrate.innerHTML='<div class="muted">최근 50판 기준 (타이/페어 제외)</div><div class="predMain" style="color:'+c+'">'+winner+'</div><div class="muted">플 '+r.p+' / 뱅 '+r.b+' / 승률 '+rate+'%</div>';}
+function renderGradeBox(){const p=combinedPrediction();gradeBox.innerHTML='<div class="muted">현재 패턴 등급</div><div class="predMain" style="color:'+p.grade.color+'">'+p.grade.grade+'</div><div class="muted">'+p.grade.text+' / '+p.grade.detail+'</div>';}
+function renderPrediction(){const p=combinedPrediction();if(rounds.length<8)prediction.innerHTML='<div class="muted">분석 대기</div><div class="predMain">-</div><div class="muted">최소 8판 이상 입력하면 예측이 시작됩니다.</div>';else if(p.best==='PASS')prediction.innerHTML='<div class="muted">추천 보류</div><div class="predMain">PASS</div><div class="muted">'+p.reason+'</div>';else prediction.innerHTML='<div class="muted">다음 추천</div><div class="predMain" style="color:'+color(p.best)+'">'+fullLabel(p.best)+'</div><div class="muted">신뢰도 '+p.confidence.toFixed(1)+'% / '+p.reason+(p.pairBest?' / 페어 후보: '+fullLabel(p.pairBest):'')+'</div>';predTable.innerHTML='<table class="smalltable"><thead><tr><th>항목</th><th>예측/비율</th><th>설명</th></tr></thead><tbody><tr><td>플/뱅</td><td>'+(p.best==='PASS'?'PASS':fullLabel(p.best)+' '+p.confidence.toFixed(1)+'%')+'</td><td>타이 제외 승률 기준</td></tr><tr><td>타이</td><td>'+p.tieRate.toFixed(1)+'%</td><td>승률 미포함</td></tr><tr><td>플레이어 페어</td><td>'+p.pair.pp.confidence.toFixed(1)+'%</td><td>'+(p.pair.pp.best==='PP'?'출현 후보':'낮음')+'</td></tr><tr><td>뱅커 페어</td><td>'+p.pair.bp.confidence.toFixed(1)+'%</td><td>'+(p.pair.bp.best==='BP'?'출현 후보':'낮음')+'</td></tr></tbody></table>';}
+function renderRoad(){tabBig.classList.toggle('active',activeRoad==='big');tabSix.classList.toggle('active',activeRoad==='six');tabChina.classList.toggle('active',activeRoad==='china');if(activeRoad==='big'){drawRoad(buildBigRoad());roadInfo.textContent='원매: 플/뱅 흐름, 타이 숫자, 페어 작은 점 표시'}else if(activeRoad==='six'){drawRoad(buildSixRoad());roadInfo.textContent='육매: 최근 6개 플/뱅 흐름의 우세 방향'}else{drawRoad(buildChinaRoad());roadInfo.textContent='중국점: 연속/꺾임/반복 흐름 요약'}}
+function renderSummary(){const p=combinedPrediction();const rows=[['원매',p.big.best,p.big.confidence,p.big.found],['육매',p.six.best,p.six.confidence,p.six.found],['중국점',p.china.best,p.china.confidence,p.china.found],['타이 제외 플/뱅',p.noTie.best,p.noTie.confidence,p.noTie.found]];patternSummary.innerHTML='<div><span class="pill">총 입력 '+rounds.length+'판</span><span class="pill">타이 제외 '+nonTieOutcomes().length+'판</span><span class="pill">최근 6패턴 기반</span></div><table class="smalltable"><thead><tr><th>분석 종류</th><th>후보</th><th>신뢰도</th><th>과거 동일 패턴</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+fullLabel(r[1])+'</td><td>'+r[2].toFixed(1)+'%</td><td>'+r[3]+'회</td></tr>').join('')+'</tbody></table>';}
+function renderList(){roundList.innerHTML=rounds.slice(-80).map((r,i)=>{const idx=rounds.length-Math.min(rounds.length,80)+i+1;const pairs=[];if(r.pp)pairs.push('P페어');if(r.bp)pairs.push('B페어');return '<span class="roundChip '+r.o+'">'+idx+'. '+label(r.o)+(pairs.length?' · '+pairs.join('/'):'')+'</span>'}).join('')||'<span class="muted">아직 입력된 결과가 없습니다.</span>';}
+function renderStats(){cntB.textContent=rounds.filter(r=>r.o==='B').length;cntP.textContent=rounds.filter(r=>r.o==='P').length;cntT.textContent=rounds.filter(r=>r.o==='T').length;cntPair.textContent=rounds.filter(r=>r.pp||r.bp).length;}
+function render(){renderStats();renderFlowTable();renderGradeBox();renderRecentWinrate();renderList();renderRoad();renderPrediction();renderSummary();}
 load();
 </script>
 </body>
