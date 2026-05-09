@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>바카라 최고급 분석기</title>
+  <title>양택조 최고급 분석기</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -86,43 +86,101 @@
       border: 1px solid white;
     }
     .road-wrap {
-      display: flex;
-      gap: 8px;
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-rows: repeat(6, 34px);
+      grid-auto-columns: 34px;
+      gap: 0;
       overflow-x: auto;
-      padding-bottom: 8px;
-      min-height: 60px;
+      overflow-y: hidden;
+      padding: 8px;
+      min-height: 228px;
+      background: #fff;
+      border: 2px solid #d7d7d7;
+      border-radius: 10px;
+      background-image:
+        linear-gradient(#e6e6e6 1px, transparent 1px),
+        linear-gradient(90deg, #e6e6e6 1px, transparent 1px);
+      background-size: 34px 34px;
     }
-    .road-col {
+    .road-col { display: contents; }
+    .casino-cell {
+      width: 34px;
+      height: 34px;
       display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 32px;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .big-road-disc {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 4px solid #2563eb;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .big-road-disc.banker { border-color: #dc2626; color: #dc2626; }
+    .big-road-disc.player { border-color: #2563eb; color: #2563eb; }
+    .pair-blue {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      left: 2px;
+      bottom: 2px;
+      background: #2563eb;
+      border-radius: 50%;
+      border: 1px solid white;
+    }
+    .pair-red {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      right: 2px;
+      top: 2px;
+      background: #dc2626;
+      border-radius: 50%;
+      border: 1px solid white;
     }
     .dot-road {
+      display: grid;
+      grid-template-rows: repeat(6, 24px);
+      grid-auto-flow: column;
+      grid-auto-columns: 24px;
+      gap: 0;
+      overflow-x: auto;
+      padding: 8px;
+      min-height: 172px;
+      border: 2px solid #d7d7d7;
+      border-radius: 10px;
+      background-image:
+        linear-gradient(#e6e6e6 1px, transparent 1px),
+        linear-gradient(90deg, #e6e6e6 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .derived-cell {
+      width: 24px;
+      height: 24px;
       display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-      min-height: 40px;
+      align-items: center;
+      justify-content: center;
     }
     .dot {
-      width: 20px;
-      height: 20px;
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
       border: 3px solid #2563eb;
+      background: white;
     }
     .dot.r { border-color: #dc2626; }
-    .meter {
-      width: 100%;
-      height: 10px;
-      background: #ddd;
-      border-radius: 99px;
-      overflow: hidden;
-      margin-top: 12px;
-    }
-    .meter > div {
-      height: 100%;
-      background: #111;
-      width: 0%;
+    .road-empty {
+      padding: 12px;
+      color: #777;
+      font-size: 13px;
     }
     .big { font-size: 32px; font-weight: 900; }
     .muted { color: #777; font-size: 13px; }
@@ -393,10 +451,15 @@
       c.style.background = meta[round.result].color;
       c.textContent = meta[round.result].label;
       div.appendChild(c);
-      if (round.playerPair || round.bankerPair) {
-        const dot = document.createElement('div');
-        dot.className = 'pair-dot';
-        div.appendChild(dot);
+      if (round.playerPair) {
+        const blue = document.createElement('div');
+        blue.className = 'pair-blue';
+        div.appendChild(blue);
+      }
+      if (round.bankerPair) {
+        const red = document.createElement('div');
+        red.className = 'pair-red';
+        div.appendChild(red);
       }
       return div;
     }
@@ -405,13 +468,50 @@
       const el = document.getElementById(id);
       el.innerHTML = '';
       if (!marks.length) {
-        el.innerHTML = '<div class="muted">표시할 데이터가 없습니다.</div>';
+        el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
         return;
       }
       marks.forEach(m => {
+        const cell = document.createElement('div');
+        cell.className = 'derived-cell';
         const d = document.createElement('div');
         d.className = 'dot ' + (m === 'R' ? 'r' : '');
-        el.appendChild(d);
+        cell.appendChild(d);
+        el.appendChild(cell);
+      });
+    }
+
+    function renderBigRoad(columns) {
+      const bigRoad = document.getElementById('bigRoad');
+      bigRoad.innerHTML = '';
+      if (!columns.length) {
+        bigRoad.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
+        return;
+      }
+
+      columns.forEach(col => {
+        for (let row = 0; row < 6; row++) {
+          const cell = document.createElement('div');
+          cell.className = 'casino-cell';
+          const round = col[row];
+          if (round) {
+            const disc = document.createElement('div');
+            disc.className = 'big-road-disc ' + (round.result === 'BANKER' ? 'banker' : 'player');
+            disc.textContent = round.result === 'BANKER' ? 'B' : 'P';
+            cell.appendChild(disc);
+            if (round.playerPair) {
+              const bluePair = document.createElement('div');
+              bluePair.className = 'pair-blue';
+              cell.appendChild(bluePair);
+            }
+            if (round.bankerPair) {
+              const redPair = document.createElement('div');
+              redPair.className = 'pair-red';
+              cell.appendChild(redPair);
+            }
+          }
+          bigRoad.appendChild(cell);
+        }
       });
     }
 
@@ -456,18 +556,7 @@
       document.getElementById('riskMeter').style.width = risk.value + '%';
 
       const columns = bigRoadColumns();
-      const bigRoad = document.getElementById('bigRoad');
-      bigRoad.innerHTML = '';
-      if (!columns.length) {
-        bigRoad.innerHTML = '<div class="muted">표시할 데이터가 없습니다.</div>';
-      } else {
-        columns.forEach(col => {
-          const colDiv = document.createElement('div');
-          colDiv.className = 'road-col';
-          col.forEach(r => colDiv.appendChild(chip(r)));
-          bigRoad.appendChild(colDiv);
-        });
-      }
+      renderBigRoad(columns);
 
       renderDotRoad('bigEye', derivedRoad(columns, 1));
       renderDotRoad('smallRoad', derivedRoad(columns, 2));
