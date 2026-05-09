@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>양택조 최고급 분석기</title>
+  <title>바카라 최고급 분석기</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -183,9 +183,9 @@
     </div>
 
     <div class="sub-grid">
-      <div class="panel pad"><h2>육매 (Big Eye Road)</h2><div id="bigEye" class="road-board small-board"></div></div>
-      <div class="panel pad"><h2>중국점 (Small Road)</h2><div id="smallRoad" class="road-board small-board"></div></div>
-      <div class="panel pad"><h2>소강로 (Cockroach Road)</h2><div id="cockroach" class="road-board small-board"></div></div>
+      <div class="panel pad"><h2>육매 <span class="muted">입력 흐름 보조표</span></h2><div id="bigEye" class="road-board small-board"></div></div>
+      <div class="panel pad"><h2>중국점 <span class="muted">긍정/부정</span></h2><div id="smallRoad" class="road-board small-board"></div></div>
+      <div class="panel pad"><h2>소강로 <span class="muted">긍정/부정</span></h2><div id="cockroach" class="road-board small-board"></div></div>
     </div>
   </div>
 
@@ -251,6 +251,10 @@
       return marks;
     }
 
+    function bigEyeResultRoad(source) {
+      return getMainResults(source).map(r => r.result === 'PLAYER' ? 'P' : 'B');
+    }
+
     function roadShapeKey(source) {
       const cols = bigRoadColumns(source);
       return cols.slice(-4).map(c => c.length).join('-');
@@ -259,7 +263,7 @@
     function compositeKey(source, mode) {
       const main = getMainResults(source);
       const cols = bigRoadColumns(source);
-      const bigEye = derivedRoad(cols, 1);
+      const bigEye = bigEyeResultRoad(source);
       const small = derivedRoad(cols, 2);
       const cock = derivedRoad(cols, 3);
       const pb = main.slice(-6).map(r => sideChar(r.result)).join('');
@@ -432,12 +436,38 @@
     function renderDerived(id, marks) {
       const el = document.getElementById(id);
       el.innerHTML = '';
-      if (!marks.length) { el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>'; return; }
+      if (!marks.length) {
+        el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
+        return;
+      }
       marks.forEach(mark => {
-        const cell = document.createElement('div'); cell.className = 'cell';
-        const holder = document.createElement('div'); holder.className = 'derived-disc';
-        const ring = document.createElement('div'); ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
-        holder.appendChild(ring); cell.appendChild(holder); el.appendChild(cell);
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const holder = document.createElement('div');
+        holder.className = 'derived-disc';
+        const ring = document.createElement('div');
+        ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
+        holder.appendChild(ring);
+        cell.appendChild(holder);
+        el.appendChild(cell);
+      });
+    }
+
+    function renderBigEyeResultRoad(id, marks) {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      if (!marks.length) {
+        el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
+        return;
+      }
+      marks.forEach(mark => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        const disc = document.createElement('div');
+        disc.className = 'derived-disc ' + (mark === 'P' ? 'disc-player' : 'disc-banker');
+        disc.textContent = mark;
+        cell.appendChild(disc);
+        el.appendChild(cell);
       });
     }
 
@@ -495,7 +525,7 @@
       if (!rounds.length) history.innerHTML = '<span class="muted">아직 입력된 기록이 없습니다.</span>';
 
       renderBigRoad(columns);
-      renderDerived('bigEye', derivedRoad(columns, 1));
+      renderBigEyeResultRoad('bigEye', bigEyeResultRoad(rounds));
       renderDerived('smallRoad', derivedRoad(columns, 2));
       renderDerived('cockroach', derivedRoad(columns, 3));
     }
