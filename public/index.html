@@ -215,7 +215,7 @@
     let playerPair = false;
     let bankerPair = false;
     const STORAGE_KEY = 'baccarat-analyzer-composite-v5-default-1311';
-    const DEFAULT_RESULTS_TEXT = `BPPPBBPBPBPBBBBPPBBPPTBTBPBTBPTBBBP PPPTBBBPPTBBBBBPBPPBPBPBPPPBPPPBTPBPPBBBBPBPBPPPPBTPBPPPBBBPP TBBPBBB PBP PBP PPPPBTPBPPPB BB BPP TBBPB BBBPBPPBPBPPPTPBPPPB BBBBTPBPPPB PBPBBBBPBBPTPPPB BPPBBB PTTBPBBPPBPPPPPPPPBBPPPPBBBPBPBBBBBPPPPPB PBPBBBPBPBBBBBPBPBPBBPPBTPBPPTPBPPBPBPPPPBTPBBBPBBPPPPPPBPPPBPPBBBBBBPPBPPBBPTPBBBPBPPPBBBBPBBBPBBTBBPPBBTPPBBBBTPTBBPPBBBBPPBPBBPPP TBPBBPBBPBP PBPPBPPB P PBBBBBBPPBPPPPPPBT PPBB BTT PPBPPPPPPPPBBPPBPBBPPBPPPTPBBPBBTPBBBBBBBP TPBBTPPTBBPBTBBT PPBBPBBBT PBPBPBPTBPTBBBT TBPPPPPB PBBPPPPBBBPBPBBPPBBPPBBBTPPPTPBPPBBPBBTBPPPBPPBBT BPPPBPPPTPTPBPBPPPPBPPBBBBTBPBBPBBPPPP TPTBBBBBPTBPTPBBPPPB BTBBPPPB PBBP BPPPPBBPPPPPB BBBBBBBPBBTPPB PPTPPBBBBPBPBBBBBBBBPPBPPBPBTBPTBPPBPBP PB PBBPBTPBBPBPBPBTBPPPBPPBPPPBPPPTTPPPBBBBBBBBBBPPPPPPPPPB PBTBBPBPPTPBBBPBPBTPBBPBPBPBPPBPPPBPPPPBP PBTBTBBBPBPBPPPPBBPBBBP TPBPBBT TBPTBPBPBBBBBPBBTBPPBBBPBBPPBBBBBPTPBPBBPPPPPB BP PPBPBPBPBPBPPPPBBPBBTBPBP PBBPPPTBBBBPBPBBBPBBBPBTPBPBPBBPPBBBPBBBBPBPBPPBBTTPBBBP PPBPBBPPPB PBPBTPPBBBP PPBPBBTPBPPPBPBP TT PBBPPTBBBBBBBBBBPBPBPBPBBBPBBBP PBPBBPTBPPPB BBBBPPPB BPPBBPPBBBBBPBPPPBP PBBBBBTPPB PBBPPPB BBBBBPBBBBP TPPBBPPPPBBBBBPBTPBTBPTBPPPPPBPPPBBPPPB PBPBBPTPBBPTBPBTB BBPBPBBPBBPP BBBBBPPPTBBBT PPBTPBPBBBBBPBPBPTPBBBP PBBPPBBPPBPPBBPBBBPPBBPPPPPPPTBPBPPBPBBPBBTBBPPPPBPPBPTBBPTBPPPPBBBBPPPPBPPP`;
+    const DEFAULT_RESULTS_TEXT = 'BPPPBBPBPBPBBBBPPBBPPTBTBPBTBPTBBBPPPPTBBBPPBBBPBPBPBPPPBPPPBTPBPPBBBBPBPBPPPPBTPBPPPBBBPPTBBPBBBPBPPBPBPPPTPBPPPBBBBTPBPPPBPBPBBBBBPBPPPTPBBPPPBPPPPBBPPPPBBBPBPBBBBBPPPPPBPBPBBBPBPBBBBBPBPBPBBPPBTPBPPTPBPPBPBPPPPBTPBBBPBBPPPPPPBPPPBPPBBBBBBPPBPPBBPTPPPBBPPBBBPPBPBBPPPPTBPBBBPBBBBTPPTBBPPBBBBPPBPBBPPPTBPBBBPBBPPPPPPPPBBPPPPBBBPBPBBBBBPPPPPBPBPBBBPBPBBBBBPBPBPBBPPBTPBPPTPBPPBPBPPPPBTPBBBPBBPPPPPPBPPPBPPBBBBBBPPBPPBB';
 
     const meta = {
       PLAYER: { label:'P', kr:'플', className:'disc-player', text:'blue-text' },
@@ -668,17 +668,23 @@
     }
 
     function bindEvents() {
-      document.getElementById('btnPlayer').addEventListener('click', () => addRound('PLAYER'));
-      document.getElementById('btnBanker').addEventListener('click', () => addRound('BANKER'));
-      document.getElementById('btnTie').addEventListener('click', () => addRound('TIE'));
+      const btnPlayer = document.getElementById('btnPlayer');
+      if (btnPlayer) btnPlayer.addEventListener('click', () => addRound('PLAYER'));
+      const btnBanker = document.getElementById('btnBanker');
+      if (btnBanker) btnBanker.addEventListener('click', () => addRound('BANKER'));
+      const btnTie = document.getElementById('btnTie');
+      if (btnTie) btnTie.addEventListener('click', () => addRound('TIE'));
       document.getElementById('playerPairBtn').addEventListener('click', () => { playerPair = !playerPair; render(); });
       document.getElementById('bankerPairBtn').addEventListener('click', () => { bankerPair = !bankerPair; render(); });
       document.getElementById('btnUndo').addEventListener('click', undo);
       document.getElementById('btnReset').addEventListener('click', resetAll);
-      document.getElementById('btnSave').addEventListener('click', saveData);
-      document.getElementById('btnDefault').addEventListener('click', forceLoadDefaultData);
+      const saveBtn = document.getElementById('btnSave');
+      if (saveBtn) saveBtn.addEventListener('click', saveData);
+
+      const defaultBtn = document.getElementById('btnDefault');
+      if (defaultBtn) defaultBtn.addEventListener('click', forceLoadDefaultData);
       document.getElementById('btnLoad').addEventListener('click', () => document.getElementById('fileInput').click());
-      document.getElementById('btnLoad').addEventListener('contextmenu', (e) => { e.preventDefault(); forceLoadDefaultData(); });
+      
       document.getElementById('fileInput').addEventListener('change', loadData);
     }
 
