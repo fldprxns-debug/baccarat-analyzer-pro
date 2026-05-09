@@ -74,6 +74,9 @@
       </section>
 
       <section class="card">
+        <h2>최근 50판 승률</h2>
+        <div id="recentWinrate" class="prediction" style="margin-bottom:16px"></div>
+
         <h2>다음 결과 예측</h2>
         <div id="prediction" class="prediction"></div>
         <div id="predTable"></div>
@@ -293,6 +296,42 @@ function combinedPrediction(){
   return {best,confidence,reason,score,big,noTie,six,china,pair,tieRate,pairBest};
 }
 
+function renderRecentWinrate(){
+  const recent=rounds.slice(-50);
+
+  const valid=recent.filter(r=>r.o==='B'||r.o==='P');
+
+  const b=valid.filter(r=>r.o==='B').length;
+  const p=valid.filter(r=>r.o==='P').length;
+
+  const total=b+p;
+
+  let winner='혼전';
+  let rate='0.0';
+  let colorCode='#94a3b8';
+
+  if(total>0){
+    if(b>p){
+      winner='뱅커 우세';
+      rate=((b/total)*100).toFixed(1);
+      colorCode='#dc2626';
+    }else if(p>b){
+      winner='플레이어 우세';
+      rate=((p/total)*100).toFixed(1);
+      colorCode='#2563eb';
+    }else{
+      winner='혼전 구간';
+      rate='50.0';
+    }
+  }
+
+  document.getElementById('recentWinrate').innerHTML=`
+    <div class="muted">최근 50판 기준 (타이/페어 제외)</div>
+    <div class="predMain" style="color:${colorCode}">${winner}</div>
+    <div class="muted">플 ${p} / 뱅 ${b} / 승률 ${rate}%</div>
+  `;
+}
+
 function renderPrediction(){
   const p=combinedPrediction();
   const box=document.getElementById('prediction');
@@ -370,6 +409,7 @@ function renderStats(){
 
 function render(){
   renderStats();
+  renderRecentWinrate();
   renderList();
   renderRoad();
   renderPrediction();
