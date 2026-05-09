@@ -79,6 +79,16 @@
       </section>
 
       <section class="card">
+        <h2>최근 흐름표</h2>
+        <div id="flowTable"></div>
+      </section>
+
+      <section class="card">
+        <h2>패턴 신뢰도 등급</h2>
+        <div id="gradeBox" class="prediction"></div>
+      </section>
+
+      <section class="card">
         <h2>최근 50판 승률</h2>
         <div id="recentWinrate" class="prediction" style="margin-bottom:16px"></div>
 
@@ -328,6 +338,70 @@ function predictPairs(){
   return {any,pp,bp};
 }
 
+function getFlowStats(size){
+  const recent=rounds.slice(-size);
+  const valid=recent.filter(r=>r.o==='B'||r.o==='P');
+  const b=valid.filter(r=>r.o==='B').length;
+  const p=valid.filter(r=>r.o==='P').length;
+  const total=b+p;
+  const leader=total===0?'PASS':b>p?'B':p>b?'P':'MIX';
+  const rate=total===0?0:leader==='B'?b/total*100:leader==='P'?p/total*100:50;
+  const gap=Math.abs(b-p);
+  return {size,b,p,total,leader,rate,gap};
+}
+
+function getFlowConflict(){
+  const flows=[10,20,30,50].map(getFlowStats).filter(x=>x.total>=6);
+  const leaders=[...new Set(flows.map(x=>x.leader).filter(x=>x==='B'||x==='P'))];
+  return {
+    flows,
+    conflict:leaders.length>=2,
+    mixed:flows.some(x=>x.leader==='MIX'||x.gap<=1),
+    leaders
+  };
+}
+
+function getPatternGrade(pred){
+  const found=pred.noTie.found;
+  const conf=pred.confidence;
+
+  if(pred.best==='PASS'){
+    return {grade:'PASS',text:'진입 보류',detail:pred.reason,color:'#94a3b8'};
+  }
+  if(found>=10&&conf>=65){
+    return {grade:'A',text:'강한 패턴',detail:'동일 패턴 10회 이상 + 신뢰도 65% 이상',color:'#22c55e'};
+  }
+  if(found>=6&&conf>=60){
+    return {grade:'B',text:'보통 이상',detail:'동일 패턴 6회 이상 + 신뢰도 60% 이상',color:'#eab308'};
+  }
+  if(found>=3&&conf>=55){
+    return {grade:'C',text:'약한 참고',detail:'동일 패턴 3회 이상 + 신뢰도 55% 이상',color:'#f97316'};
+  }
+  return {grade:'PASS',text:'표본 부족',detail:'동일 패턴 표본이 부족해 PASS 권장',color:'#94a3b8'};
+}
+
+function getPassRisk(score, noTie, confidence){
+  const reasons=[];
+  const flow=getFlowConflict();
+  const gap=Math.abs(score.B-score.P);
+
+  if(noTie.found<3)reasons.push('동일 패턴 표본 3회 미만');
+  if(gap<1.2)reasons.push('플/뱅 점수 차이 작음');
+  if(confidence<55)reasons.push('신뢰도 55% 미만');
+  if(flow.conflict)reasons.push('최근 10/20/30/50 흐름 충돌');
+  if(flow.mixed)reasons.push('최근 흐름 혼전');
+
+  const last=rounds[rounds.length-1];
+  if(last&&last.o==='T')reasons.push('타이 직후 구간');
+  if(last&&(last.pp||last.bp))reasons.push('페어 직후 구간');
+
+  return {
+    pass:reasons.length>0,
+    reasons,
+    flow
+  };
+}
+
 function combinedPrediction(){
   const raw=rounds.map(r=>r.o);
   const pb=nonTieOutcomes();
@@ -343,21 +417,27 @@ function combinedPrediction(){
   if(six.total){score.B+=(six.counts.B||0)*.7;score.P+=(six.counts.P||0)*.7;}
   if(china.total){score.B+=(china.counts.B||0)*.45;score.P+=(china.counts.P||0)*.45;}
 
-  // 타이는 승률 계산에서 제외하지만, 타이 자체 예측 후보는 따로 보이게 둠
   const winTotal=score.B+score.P;
   let best='PASS',confidence=0,reason='데이터 부족';
+
   if(winTotal>0){
     best=score.B>=score.P?'B':'P';
     confidence=score[best]/winTotal*100;
-    const gap=Math.abs(score.B-score.P);
-    if(gap<1.2){best='PASS';reason='플/뱅 점수 차이가 작아 PASS';}
-    else reason='원매/육매/중국점 과거 패턴 종합';
+    reason='원매/육매/중국점 과거 패턴 종합';
+  }
+
+  const risk=getPassRisk(score,noTie,confidence);
+  if(risk.pass){
+    best='PASS';
+    reason=risk.reasons.join(', ');
   }
 
   const tieRate=big.total?(big.counts.T||0)/big.total*100:0;
   const pairBest=pair.pp.total&&pair.pp.best==='PP'?'PP':pair.bp.total&&pair.bp.best==='BP'?'BP':pair.any.best==='PAIR'?'PAIR':null;
 
-  return {best,confidence,reason,score,big,noTie,six,china,pair,tieRate,pairBest};
+  const result={best,confidence,reason,score,big,noTie,six,china,pair,tieRate,pairBest,risk};
+  result.grade=getPatternGrade(result);
+  return result;
 }
 
 function renderRecentWinrate(){
@@ -393,6 +473,34 @@ function renderRecentWinrate(){
     <div class="muted">최근 50판 기준 (타이/페어 제외)</div>
     <div class="predMain" style="color:${colorCode}">${winner}</div>
     <div class="muted">플 ${p} / 뱅 ${b} / 승률 ${rate}%</div>
+  `;
+}
+
+function renderFlowTable(){
+  const rows=[10,20,30,50].map(getFlowStats);
+  flowTable.innerHTML=`
+    <table class="smalltable">
+      <thead><tr><th>구간</th><th>플</th><th>뱅</th><th>우세</th><th>승률</th></tr></thead>
+      <tbody>
+        ${rows.map(r=>`<tr>
+          <td>최근 ${r.size}판</td>
+          <td>${r.p}</td>
+          <td>${r.b}</td>
+          <td>${r.leader==='B'?'뱅커':r.leader==='P'?'플레이어':r.leader==='MIX'?'혼전':'-'}</td>
+          <td>${r.total?r.rate.toFixed(1)+'%':'-'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="muted" style="margin-top:8px">타이/페어는 흐름 승률에서 제외됩니다. 구간별 방향이 충돌하면 PASS가 강화됩니다.</div>
+  `;
+}
+
+function renderGradeBox(){
+  const p=combinedPrediction();
+  gradeBox.innerHTML=`
+    <div class="muted">현재 패턴 등급</div>
+    <div class="predMain" style="color:${p.grade.color}">${p.grade.grade}</div>
+    <div class="muted">${p.grade.text} / ${p.grade.detail}</div>
   `;
 }
 
@@ -473,6 +581,8 @@ function renderStats(){
 
 function render(){
   renderStats();
+  renderFlowTable();
+  renderGradeBox();
   renderRecentWinrate();
   renderList();
   renderRoad();
