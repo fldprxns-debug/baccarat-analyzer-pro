@@ -153,8 +153,9 @@
         <div class="row">
           <button id="btnUndo">↩</button>
           <button id="btnReset">⟳</button>
-          <button id="btnLoad">⇧</button>
+          <button id="btnLoad" title="클릭: 파일 불러오기 / 우클릭: 기본 백업 1,311개 강제 적용">⇧</button>
           <button id="btnSave">⇩</button>
+          <button id="btnDefault" title="기본 백업 1,311개 적용">DATA</button>
           <input id="fileInput" class="hidden-input" type="file" accept="application/json,.txt,.csv">
         </div>
         <div class="muted" style="margin-top:8px;">전체 <b id="totalRounds">0</b> / 실계산 <b id="mainRounds">0</b></div>
@@ -213,8 +214,8 @@
     let rounds = [];
     let playerPair = false;
     let bankerPair = false;
-    const STORAGE_KEY = 'baccarat-analyzer-composite-v4-default-1311';
-    const DEFAULT_RESULTS = ["B","P","P","P","B","B","P","B","P","B","P","B","B","B","B","P","P","B","B","P","P","B","T","B","T","P","B","P","B","T","B","P","T","B","B","B","P","P","P","B","B","B","P","P","P","T","B","B","B","B","B","P","B","P","P","B","P","B","P","B","P","P","P","B","P","P","P","B","T","P","B","P","P","B","B","B","B","P","B","P","B","P","P","P","P","B","T","P","B","P","P","P","B","B","B","P","P","T","B","B","P","B","B","B","P","B","P","P","B","P","B","B","B","P","P","P","B","B","P","P","B","T","P","B","P","P","P","P","P","P","P","P","P","P","B","B","B","B","P","B","P","P","P","B","B","P","B","P","T","B","B","P","B","P","B","P","P","B","P","P","B","B","B","B","T","P","B","P","P","P","B","P","B","P","B","B","B","B","P","B","B","P","T","P","P","P","B","B","P","B","B","B","P","P","B","T","P","P","B","B","B","B","P","B","B","T","P","B","P","T","P","P","B","P","B","T","B","B","B","B","P","P","P","B","P","P","B","B","P","T","P","T","B","B","B","P","P","P","B","P","B","B","B","P","T","T","B","P","B","B","P","P","B","P","P","P","P","P","P","P","P","P","B","B","P","P","P","P","B","B","B","P","B","P","B","B","B","B","B","P","P","P","P","P","B","P","B","P","B","B","B","P","B","P","B","B","B","B","B","P","B","P","B","P","B","B","P","P","B","T","P","B","P","P","T","P","B","P","P","B","P","B","P","P","P","P","B","T","P","B","B","B","P","B","B","P","P","P","P","P","P","P","B","P","P","P","B","P","P","B","B","B","B","B","B","P","P","B","P","P","B","B","P","T","P","B","B","B","P","B","P","P","P","B","B","B","B","P","B","B","B","P","B","B","T","B","B","P","P","B","B","T","P","P","B","B","B","B","T","P","T","B","B","P","P","B","B","B","B","P","P","B","P","B","B","P","P","P","T","B","P","B","B","P","B","B","P","B","P","P","B","P","P","B","P","P","B","B","B","B","B","B","P","P","B","P","P","P","P","P","P","B","T","P","P","B","B","B","T","T","P","P","B","P","P","P","P","P","P","P","P","B","B","P","P","B","P","B","B","P","P","B","P","P","P","T","P","B","B","P","B","B","T","P","B","B","B","B","B","B","B","P","T","P","B","B","T","P","P","T","B","B","P","B","T","B","B","T","P","P","B","B","P","B","B","B","T","P","B","P","B","P","B","P","T","B","P","T","B","B","B","T","T","B","P","P","P","P","P","B","P","B","B","P","P","P","P","B","B","B","P","B","P","B","B","P","P","B","B","P","P","B","B","T","P","P","P","T","P","B","P","P","B","B","P","B","B","T","B","P","P","P","B","P","P","P","P","T","P","T","P","B","P","B","P","P","P","P","B","P","P","B","B","B","B","T","B","P","B","B","P","B","B","P","P","P","P","T","P","T","B","B","B","B","B","P","T","B","P","T","P","B","B","P","P","P","B","B","T","B","B","P","P","P","B","P","B","B","P","B","P","P","P","P","B","B","B","P","P","P","P","P","B","B","B","B","B","B","B","P","B","B","T","P","P","B","P","P","T","P","P","B","B","B","B","P","B","P","B","B","B","B","B","B","B","P","P","B","P","P","B","P","B","T","B","P","T","B","P","P","B","P","B","P","P","B","P","B","B","P","B","P","P","B","P","B","T","B","B","P","B","P","P","B","P","B","P","B","T","P","P","P","B","P","P","B","P","P","P","B","P","P","B","P","P","P","T","T","P","P","P","B","B","B","B","B","B","B","B","B","B","P","P","P","P","P","P","P","P","P","B","P","B","T","B","B","P","B","P","P","B","P","T","P","B","B","B","P","B","P","B","T","P","B","B","P","B","P","B","P","P","B","P","P","P","B","P","P","P","P","B","P","P","B","T","B","T","B","B","B","P","B","P","B","P","P","P","P","B","B","P","B","B","B","P","T","P","B","P","B","B","T","T","B","P","T","B","P","B","P","B","B","B","B","B","P","B","B","T","B","P","P","B","B","B","P","B","B","P","P","B","B","B","B","B","P","T","P","B","P","B","B","P","P","P","P","P","B","B","P","B","P","P","B","P","B","P","B","P","B","P","B","P","P","P","P","B","B","P","B","B","T","B","P","B","P","P","B","B","P","P","P","T","B","B","B","B","P","B","P","B","B","B","P","B","B","B","P","B","T","P","B","P","B","P","B","B","P","P","B","B","B","P","B","B","B","B","P","B","P","B","P","P","B","B","T","T","P","B","B","B","P","P","P","B","P","B","B","P","P","P","B","P","B","P","B","T","P","P","B","B","B","P","P","P","B","P","P","B","B","T","P","B","P","P","P","B","P","B","P","T","T","P","B","B","P","P","T","B","B","B","B","B","B","B","B","B","B","B","P","B","P","B","P","B","P","B","B","B","P","B","B","B","P","P","B","P","B","B","P","T","B","P","P","P","B","B","B","B","P","P","P","B","B","P","P","B","B","P","P","B","B","B","B","B","P","B","P","P","P","B","P","P","B","B","B","B","B","T","P","P","B","P","B","B","P","P","P","B","B","B","B","B","B","P","B","B","B","B","P","B","B","B","P","T","P","P","B","B","P","P","P","P","B","B","B","B","B","P","B","T","P","B","T","B","P","T","B","P","P","P","P","P","B","P","P","P","B","B","P","P","P","B","P","B","P","B","B","P","T","P","B","B","P","T","B","B","P","B","T","B","P","B","B","B","P","B","P","B","B","P","B","P","P","B","B","B","B","B","P","P","P","T","B","B","B","T","P","P","B","T","P","B","P","B","B","B","B","B","P","B","P","B","P","T","P","B","B","B","P","P","B","B","P","P","B","B","P","B","P","B","B","B","P","P","B","B","P","P","P","P","P","P","P","T","B","P","B","P","P","B","P","B","B","P","B","B","T","B","B","P","P","P","P","B","P","P","B","P","T","B","B","P","T","B","P","P","P","P","B","B","B","B","P","P","P","P","B","P","P","P"];
+    const STORAGE_KEY = 'baccarat-analyzer-composite-v5-default-1311';
+    const DEFAULT_RESULTS_TEXT = `BPPPBBPBPBPBBBBPPBBPPTBTBPBTBPTBBBP PPPTBBBPPTBBBBBPBPPBPBPBPPPBPPPBTPBPPBBBBPBPBPPPPBTPBPPPBBBPP TBBPBBB PBP PBP PPPPBTPBPPPB BB BPP TBBPB BBBPBPPBPBPPPTPBPPPB BBBBTPBPPPB PBPBBBBPBBPTPPPB BPPBBB PTTBPBBPPBPPPPPPPPBBPPPPBBBPBPBBBBBPPPPPB PBPBBBPBPBBBBBPBPBPBBPPBTPBPPTPBPPBPBPPPPBTPBBBPBBPPPPPPBPPPBPPBBBBBBPPBPPBBPTPBBBPBPPPBBBBPBBBPBBTBBPPBBTPPBBBBTPTBBPPBBBBPPBPBBPPP TBPBBPBBPBP PBPPBPPB P PBBBBBBPPBPPPPPPBT PPBB BTT PPBPPPPPPPPBBPPBPBBPPBPPPTPBBPBBTPBBBBBBBP TPBBTPPTBBPBTBBT PPBBPBBBT PBPBPBPTBPTBBBT TBPPPPPB PBBPPPPBBBPBPBBPPBBPPBBBTPPPTPBPPBBPBBTBPPPBPPBBT BPPPBPPPTPTPBPBPPPPBPPBBBBTBPBBPBBPPPP TPTBBBBBPTBPTPBBPPPB BTBBPPPB PBBP BPPPPBBPPPPPB BBBBBBBPBBTPPB PPTPPBBBBPBPBBBBBBBBPPBPPBPBTBPTBPPBPBP PB PBBPBTPBBPBPBPBTBPPPBPPBPPPBPPPTTPPPBBBBBBBBBBPPPPPPPPPB PBTBBPBPPTPBBBPBPBTPBBPBPBPBPPBPPPBPPPPBP PBTBTBBBPBPBPPPPBBPBBBP TPBPBBT TBPTBPBPBBBBBPBBTBPPBBBPBBPPBBBBBPTPBPBBPPPPPB BP PPBPBPBPBPBPPPPBBPBBTBPBP PBBPPPTBBBBPBPBBBPBBBPBTPBPBPBBPPBBBPBBBBPBPBPPBBTTPBBBP PPBPBBPPPB PBPBTPPBBBP PPBPBBTPBPPPBPBP TT PBBPPTBBBBBBBBBBPBPBPBPBBBPBBBP PBPBBPTBPPPB BBBBPPPB BPPBBPPBBBBBPBPPPBP PBBBBBTPPB PBBPPPB BBBBBPBBBBP TPPBBPPPPBBBBBPBTPBTBPTBPPPPPBPPPBBPPPB PBPBBPTPBBPTBPBTB BBPBPBBPBBPP BBBBBPPPTBBBT PPBTPBPBBBBBPBPBPTPBBBP PBBPPBBPPBPPBBPBBBPPBBPPPPPPPTBPBPPBPBBPBBTBBPPPPBPPBPTBBPTBPPPPBBBBPPPPBPPP`;
 
     const meta = {
       PLAYER: { label:'P', kr:'플', className:'disc-player', text:'blue-text' },
@@ -389,11 +390,16 @@
     function normalizeRounds(raw) {
       let source = raw;
       if (typeof raw === 'string') {
-        try { source = JSON.parse(raw); }
-        catch { source = raw.replace(/
+        try {
+          source = JSON.parse(raw);
+        } catch {
+          const compact = raw.replace(/[^PBTpbt플뱅타이]/g, '').toUpperCase();
+          if (compact && /^[PBT]+$/.test(compact)) source = compact.split('');
+          else source = raw.replace(/
 /g, '
 ').split(/[
-,;| ]+/).filter(Boolean); }
+,;| ]+/).filter(Boolean);
+        }
       }
       if (!Array.isArray(source)) source = source.rounds || source.records || source.history || source.data || source.results || [];
       if (!Array.isArray(source)) return [];
@@ -414,6 +420,13 @@
       }).filter(Boolean);
     }
 
+    function forceLoadDefaultData() {
+      rounds = normalizeRounds(DEFAULT_RESULTS_TEXT);
+      saveToBrowser();
+      render();
+      alert('기본 백업 데이터 ' + rounds.length + '개를 적용했습니다.');
+    }
+
     function saveToBrowser() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ rounds, savedAt:new Date().toISOString() })); } catch(e) {}
     }
@@ -428,11 +441,11 @@
         }
 
         // 첫 실행 또는 저장 데이터가 없을 때 업로드된 1,311개 백업 데이터를 기본 탑재
-        rounds = normalizeRounds(DEFAULT_RESULTS);
+        rounds = normalizeRounds(DEFAULT_RESULTS_TEXT);
         saveToBrowser();
       } catch(e) {
         console.warn(e);
-        rounds = normalizeRounds(DEFAULT_RESULTS);
+        rounds = normalizeRounds(DEFAULT_RESULTS_TEXT);
         saveToBrowser();
       }
     }
@@ -663,7 +676,9 @@
       document.getElementById('btnUndo').addEventListener('click', undo);
       document.getElementById('btnReset').addEventListener('click', resetAll);
       document.getElementById('btnSave').addEventListener('click', saveData);
+      document.getElementById('btnDefault').addEventListener('click', forceLoadDefaultData);
       document.getElementById('btnLoad').addEventListener('click', () => document.getElementById('fileInput').click());
+      document.getElementById('btnLoad').addEventListener('contextmenu', (e) => { e.preventDefault(); forceLoadDefaultData(); });
       document.getElementById('fileInput').addEventListener('change', loadData);
     }
 
