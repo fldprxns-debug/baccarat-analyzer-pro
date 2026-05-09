@@ -235,6 +235,81 @@
 
     function makeId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
 
+    const STORAGE_KEY = 'baccarat-analyzer-pro-dark-v2-autosave';
+
+    function normalizeResult(value) {
+      const v = String(value || '').trim().toUpperCase();
+      if (['P', 'PLAYER', '플', '플레이어'].includes(v)) return 'PLAYER';
+      if (['B', 'BANKER', '뱅', '뱅커'].includes(v)) return 'BANKER';
+      if (['T', 'TIE', '타이'].includes(v)) return 'TIE';
+      return null;
+    }
+
+    function normalizeRounds(raw) {
+      let source = raw;
+      if (typeof raw === 'string') {
+        try { source = JSON.parse(raw); }
+        catch {
+          source = raw.replace(/\r/g, '\n').split(/[\n,;| ]+/).filter(Boolean);
+        }
+      }
+
+      if (!Array.isArray(source)) {
+        source = source.rounds || source.records || source.history || source.data || source.results || [];
+      }
+
+      if (!Array.isArray(source)) return [];
+
+      const normalized = [];
+      source.forEach((item, index) => {
+        let result;
+        let pPair = false;
+        let bPair = false;
+        let createdAt;
+        let oldAiPick;
+
+        if (typeof item === 'string') {
+          result = normalizeResult(item);
+        } else if (item && typeof item === 'object') {
+          result = normalizeResult(item.result || item.winner || item.side || item.value || item.type || item.name);
+          pPair = Boolean(item.playerPair || item.pairPlayer || item.pPair || item.pp || item.player_pair || item.pair === 'PLAYER' || item.pair === 'P');
+          bPair = Boolean(item.bankerPair || item.pairBanker || item.bPair || item.bp || item.banker_pair || item.pair === 'BANKER' || item.pair === 'B');
+          if (item.pair === 'BOTH' || item.pair === '쌍페어' || item.bothPair) { pPair = true; bPair = true; }
+          createdAt = item.createdAt || item.time || item.date;
+          oldAiPick = item.aiPickBefore;
+        }
+
+        if (result) {
+          const before = analyzePattern(normalized, 6).pick;
+          normalized.push({
+            id: (item && item.id) || makeId() + index,
+            result,
+            playerPair: pPair,
+            bankerPair: bPair,
+            aiPickBefore: oldAiPick || before,
+            createdAt: createdAt || new Date().toISOString()
+          });
+        }
+      });
+
+      return normalized;
+    }
+
+    function saveToBrowser() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ rounds, savedAt: new Date().toISOString() }));
+    }
+
+    function loadFromBrowser() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+        const parsed = JSON.parse(saved);
+        rounds = normalizeRounds(parsed.rounds || parsed);
+      } catch (e) {
+        console.warn('자동 저장 데이터 복구 실패', e);
+      }
+    }
+
     function getMainResults(source = rounds) { return source.filter(r => r.result === 'PLAYER' || r.result === 'BANKER'); }
 
     function analyzePattern(source = rounds, length = 6) {
@@ -271,12 +346,19 @@
       playerPair = false;
       bankerPair = false;
       render();
+      saveToBrowser();
     }
 
     function togglePlayerPair() { playerPair = !playerPair; render(); }
     function toggleBankerPair() { bankerPair = !bankerPair; render(); }
-    function undo() { rounds.pop(); render(); }
-    function resetAll() { if (confirm('전체 기록을 삭제할까요?')) { rounds = []; render(); } }
+    function undo() { rounds.pop(); render(); saveToBrowser(); }
+    function resetAll() {
+      if (confirm('전체 기록을 삭제할까요?')) {
+        rounds = [];
+        localStorage.removeItem(STORAGE_KEY);
+        render();
+      }
+    }
 
     function aiWinRate(size = 50) {
       const resolved = rounds
@@ -464,16 +546,26 @@
       const reader = new FileReader();
       reader.onload = function() {
         try {
-          const parsed = JSON.parse(String(reader.result));
-          const loaded = Array.isArray(parsed) ? parsed : parsed.rounds;
-          if (!Array.isArray(loaded)) throw new Error('invalid');
+          const text = String(reader.result);
+          let parsed;
+          try { parsed = JSON.parse(text); }
+          catch { parsed = text; }
+
+          const loaded = normalizeRounds(parsed);
+          if (!loaded.length) throw new Error('invalid');
+
           rounds = loaded;
+          saveToBrowser();
           render();
-        } catch (e) { alert('불러오기 실패: 올바른 저장 파일이 아닙니다.'); }
+          alert('기록 ' + loaded.length + '개를 불러왔고 자동 저장했습니다.');
+        } catch (e) {
+          alert('불러오기 실패: 기록 파일 형식을 인식하지 못했습니다. JSON, CSV, TXT 형식의 P/B/T 기록을 지원합니다.');
+        }
       };
       reader.readAsText(file); event.target.value = '';
     }
 
+    loadFromBrowser();
     render();
   </script>
 </body>
