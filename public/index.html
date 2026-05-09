@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>바카라 최고급 분석기</title>
+  <title>양택조 최고급 분석기</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -94,6 +94,9 @@
     .legend-row { display:flex; align-items:center; gap:8px; margin:7px 0; font-size:13px; }
     .meter { width:100%; height:8px; background:rgba(255,255,255,.09); border-radius:999px; overflow:hidden; margin-top:10px; }
     .meter div { height:100%; background:linear-gradient(90deg,#2563eb,#facc15,#dc2626); width:0; }
+    .side-bet-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:6px; margin-top:10px; }
+    .side-bet-box { padding:9px; border:1px solid rgba(255,255,255,.09); border-radius:6px; background:rgba(255,255,255,.035); text-align:center; }
+    .side-bet-value { display:block; margin-top:4px; font-size:20px; font-weight:900; }
     .hidden-input { display:none; }
     @media (max-width: 1050px) {
       .top-grid, .dashboard-grid, .main-grid, .sub-grid { grid-template-columns:1fr; }
@@ -155,6 +158,12 @@
           <div><span class="muted">단계</span><br><b id="patternTier">대기</b></div>
         </div>
         <div class="row" style="margin-top:10px;"><span class="muted">추천:</span><b id="recommendText">대기</b><span class="muted">신뢰도:</span><b id="recommendConfidence" class="yellow-text">0%</b></div>
+        <div class="side-bet-grid">
+          <div class="side-bet-box"><span class="muted">타이</span><span id="tieRate" class="side-bet-value green-text">0%</span></div>
+          <div class="side-bet-box"><span class="muted">플페어</span><span id="playerPairRate" class="side-bet-value blue-text">0%</span></div>
+          <div class="side-bet-box"><span class="muted">뱅페어</span><span id="bankerPairRate" class="side-bet-value red-text">0%</span></div>
+          <div class="side-bet-box"><span class="muted">쌍페어</span><span id="bothPairRate" class="side-bet-value yellow-text">0%</span></div>
+        </div>
       </div>
 
       <div class="panel pad">
@@ -343,14 +352,55 @@
           var bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
           var pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
           var confidence = samples ? Math.max(playerRate, bankerRate) : 0;
-          return { pick:pick, confidence:confidence, samples:samples, playerNext:playerNext, bankerNext:bankerNext, playerRate:playerRate, bankerRate:bankerRate, tier:mode.label, pattern:pattern };
+          return { pick:pick, confidence:confidence, samples:samples, playerNext:playerNext, bankerNext:bankerNext, playerRate:playerRate, bankerRate:bankerRate, tier:mode.label, pattern:pattern, modeId:mode.id };
         }
       }
       return emptyAnalysis(pattern);
     }
 
+    function analyzeSideBets(source, modeId) {
+      var all = source || rounds;
+      var main = getMainResults(all);
+      if (main.length <= 6) return { samples:0, tieRate:0, playerPairRate:0, bankerPairRate:0, bothPairRate:0 };
+
+      var modes = modeId ? [modeId] : ['full', 'medium', 'shape', 'pb'];
+      for (var mi = 0; mi < modes.length; mi++) {
+        var mode = modes[mi];
+        var target = compositeKey(all, mode);
+        var samples = 0;
+        var tieCount = 0;
+        var playerPairCount = 0;
+        var bankerPairCount = 0;
+        var bothPairCount = 0;
+
+        for (var i = 6; i < all.length; i++) {
+          var next = all[i];
+          var before = all.slice(0, i);
+          if (getMainResults(before).length < 6) continue;
+          if (compositeKey(before, mode) === target) {
+            samples++;
+            if (next.result === 'TIE') tieCount++;
+            if (next.playerPair) playerPairCount++;
+            if (next.bankerPair) bankerPairCount++;
+            if (next.playerPair && next.bankerPair) bothPairCount++;
+          }
+        }
+
+        if (samples > 0 || mode === 'pb') {
+          return {
+            samples:samples,
+            tieRate:samples ? Math.round(tieCount / samples * 100) : 0,
+            playerPairRate:samples ? Math.round(playerPairCount / samples * 100) : 0,
+            bankerPairRate:samples ? Math.round(bankerPairCount / samples * 100) : 0,
+            bothPairRate:samples ? Math.round(bothPairCount / samples * 100) : 0
+          };
+        }
+      }
+      return { samples:0, tieRate:0, playerPairRate:0, bankerPairRate:0, bothPairRate:0 };
+    }
+
     function emptyAnalysis(pattern) {
-      return { pick:null, confidence:0, samples:0, playerNext:0, bankerNext:0, playerRate:0, bankerRate:0, tier:'대기', pattern:pattern || '' };
+      return { pick:null, confidence:0, samples:0, playerNext:0, bankerNext:0, playerRate:0, bankerRate:0, tier:'대기', pattern:pattern || '', modeId:null };
     }
 
     function normalizeRounds(raw) {
@@ -518,6 +568,7 @@
       var ai = aiWinRate(50);
       var streak = streakInfo();
       var risk = riskLevel(analysis);
+      var sideBets = analyzeSideBets(rounds, analysis.modeId);
 
       document.getElementById('playerPairBtn').className = 'pair-pill' + (playerPair ? ' on' : '');
       document.getElementById('bankerPairBtn').className = 'pair-pill' + (bankerPair ? ' on' : '');
@@ -542,6 +593,10 @@
       document.getElementById('recommendText').textContent = analysis.pick ? meta[analysis.pick].kr + ' (' + meta[analysis.pick].label + ')' : '대기';
       document.getElementById('recommendText').className = analysis.pick ? meta[analysis.pick].text : '';
       document.getElementById('recommendConfidence').textContent = analysis.confidence + '%';
+      document.getElementById('tieRate').textContent = sideBets.tieRate + '%';
+      document.getElementById('playerPairRate').textContent = sideBets.playerPairRate + '%';
+      document.getElementById('bankerPairRate').textContent = sideBets.bankerPairRate + '%';
+      document.getElementById('bothPairRate').textContent = sideBets.bothPairRate + '%';
       document.getElementById('riskMeter').style.width = risk.value + '%';
 
       var history = document.getElementById('history');
