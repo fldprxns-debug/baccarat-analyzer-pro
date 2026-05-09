@@ -80,30 +80,13 @@
     .disc-player { background:radial-gradient(circle at 35% 25%, #70a8ff, #1d5bd6 55%, #071b48); }
     .disc-banker { background:radial-gradient(circle at 35% 25%, #ff7180, #c71e2f 55%, #520710); }
     .disc-tie { background:radial-gradient(circle at 35% 25%, #69e582, #168a35 55%, #052f12); }
-    .derived-disc { width:22px; height:22px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.035); display:flex; align-items:center; justify-content:center; }
+    .derived-disc { width:22px; height:22px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.035); display:flex; align-items:center; justify-content:center; color:white; font-weight:900; font-size:12px; }
     .ring { width:17px; height:17px; border-radius:50%; border:3px solid #2563eb; background:rgba(8,12,18,.95); }
     .ring.red { border-color:#dc2626; }
     .pair-blue, .pair-red { position:absolute; width:9px; height:9px; border-radius:50%; border:1px solid rgba(255,255,255,.9); z-index:2; }
-    .tie-badge {
-      position:absolute;
-      right:2px;
-      bottom:2px;
-      min-width:14px;
-      height:14px;
-      padding:0 3px;
-      border-radius:999px;
-      background:#16a34a;
-      color:#fff;
-      font-size:9px;
-      font-weight:900;
-      line-height:14px;
-      text-align:center;
-      border:1px solid rgba(255,255,255,.9);
-      box-shadow:0 0 8px rgba(34,197,94,.75);
-      z-index:3;
-    }
     .pair-blue { left:3px; bottom:3px; background:#2563eb; box-shadow:0 0 8px #2563eb; }
     .pair-red { right:3px; top:3px; background:#dc2626; box-shadow:0 0 8px #dc2626; }
+    .tie-badge { position:absolute; right:2px; bottom:2px; min-width:14px; height:14px; padding:0 3px; border-radius:999px; background:#16a34a; color:#fff; font-size:9px; font-weight:900; line-height:14px; text-align:center; border:1px solid rgba(255,255,255,.9); box-shadow:0 0 8px rgba(34,197,94,.75); z-index:3; }
     .history-row { display:flex; gap:6px; overflow-x:auto; padding:8px 0 2px; min-height:36px; }
     .history-chip { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; color:white; position:relative; flex:0 0 auto; }
     .road-empty { padding:14px; color:#6f7785; font-size:13px; }
@@ -153,9 +136,8 @@
         <div class="row">
           <button id="btnUndo">↩</button>
           <button id="btnReset">⟳</button>
-          <button id="btnLoad" title="클릭: 파일 불러오기 / 우클릭: 기본 백업 1,311개 강제 적용">⇧</button>
+          <button id="btnLoad">⇧</button>
           <button id="btnSave">⇩</button>
-          <button id="btnDefault" title="기본 백업 1,311개 적용">DATA</button>
           <input id="fileInput" class="hidden-input" type="file" accept="application/json,.txt,.csv">
         </div>
         <div class="muted" style="margin-top:8px;">전체 <b id="totalRounds">0</b> / 실계산 <b id="mainRounds">0</b></div>
@@ -209,41 +191,38 @@
   </div>
 
   <script>
-    'use strict';
+    var rounds = [];
+    var playerPair = false;
+    var bankerPair = false;
+    var STORAGE_KEY = 'baccarat-analyzer-final-working-v1';
 
-    let rounds = [];
-    let playerPair = false;
-    let bankerPair = false;
-    const STORAGE_KEY = 'baccarat-analyzer-composite-v5-default-1311';
-    const DEFAULT_RESULTS_TEXT = 'BPPPBBPBPBPBBBBPPBBPPTBTBPBTBPTBBBPPPPTBBBPPBBBPBPBPBPPPBPPPBTPBPPBBBBPBPBPPPPBTPBPPPBBBPPTBBPBBBPBPPBPBPPPTPBPPPBBBBTPBPPPBPBPBBBBBPBPPPTPBBPPPBPPPPBBPPPPBBBPBPBBBBBPPPPPBPBPBBBPBPBBBBBPBPBPBBPPBTPBPPTPBPPBPBPPPPBTPBBBPBBPPPPPPBPPPBPPBBBBBBPPBPPBBPTPPPBBPPBBBPPBPBBPPPPTBPBBBPBBBBTPPTBBPPBBBBPPBPBBPPPTBPBBBPBBPPPPPPPPBBPPPPBBBPBPBBBBBPPPPPBPBPBBBPBPBBBBBPBPBPBBPPBTPBPPTPBPPBPBPPPPBTPBBBPBBPPPPPPBPPPBPPBBBBBBPPBPPBB';
-
-    const meta = {
+    var meta = {
       PLAYER: { label:'P', kr:'플', className:'disc-player', text:'blue-text' },
       BANKER: { label:'B', kr:'뱅', className:'disc-banker', text:'red-text' },
       TIE: { label:'T', kr:'타이', className:'disc-tie', text:'green-text' }
     };
 
     function makeId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-    function getMainResults(source) { return (source || rounds).filter(r => r.result === 'PLAYER' || r.result === 'BANKER'); }
+    function getMainResults(source) { return (source || rounds).filter(function(r) { return r.result === 'PLAYER' || r.result === 'BANKER'; }); }
     function sideChar(result) { return result === 'PLAYER' ? 'P' : result === 'BANKER' ? 'B' : 'T'; }
+
     function normalizeResult(value) {
-      const v = String(value || '').trim().toUpperCase();
-      if (['P','PLAYER','플','플레이어'].includes(v)) return 'PLAYER';
-      if (['B','BANKER','뱅','뱅커'].includes(v)) return 'BANKER';
-      if (['T','TIE','타이'].includes(v)) return 'TIE';
+      var v = String(value || '').trim().toUpperCase();
+      if (['P','PLAYER','플','플레이어'].indexOf(v) >= 0) return 'PLAYER';
+      if (['B','BANKER','뱅','뱅커'].indexOf(v) >= 0) return 'BANKER';
+      if (['T','TIE','타이'].indexOf(v) >= 0) return 'TIE';
       return null;
     }
 
     function bigRoadColumns(source) {
-      const data = source || rounds;
-      const columns = [];
-      let current = [];
-      let lastSide = null;
-      let lastMainRound = null;
+      var data = source || rounds;
+      var columns = [];
+      var current = [];
+      var lastSide = null;
+      var lastMainRound = null;
 
-      data.forEach(original => {
-        const round = Object.assign({ tieCount: 0 }, original);
-
+      data.forEach(function(original) {
+        var round = Object.assign({ tieCount: 0 }, original);
         if (round.result === 'TIE') {
           if (lastMainRound) {
             lastMainRound.tieCount = (lastMainRound.tieCount || 0) + 1;
@@ -256,39 +235,34 @@
           }
           return;
         }
-
-        if (!lastSide || round.result === lastSide) {
-          current.push(round);
-        } else {
+        if (!lastSide || round.result === lastSide) current.push(round);
+        else {
           if (current.length) columns.push(current);
           current = [round];
         }
-
         lastSide = round.result;
         lastMainRound = round;
       });
-
       if (current.length) columns.push(current);
       return columns;
     }
 
     function derivedRoad(columns, offset) {
-      const marks = [];
-      columns.forEach((col, colIndex) => {
-        col.forEach((round, rowIndex) => {
+      var marks = [];
+      columns.forEach(function(col, colIndex) {
+        col.forEach(function(round, rowIndex) {
+          if (round.result === 'TIE') return;
           if (rowIndex === 0) {
             if (colIndex < offset + 1) return;
-            const prevCol = columns[colIndex - 1];
-            const compareCol = columns[colIndex - offset - 1];
+            var prevCol = columns[colIndex - 1];
+            var compareCol = columns[colIndex - offset - 1];
             if (!prevCol || !compareCol) return;
             marks.push(prevCol.length === compareCol.length ? 'R' : 'B');
           } else {
             if (colIndex < offset) return;
-            const compareCol = columns[colIndex - offset];
-            if (!compareCol) return;
-            const hasCurrentRow = compareCol.length > rowIndex;
-            const hasAboveRow = compareCol.length > rowIndex - 1;
-            marks.push(hasCurrentRow === hasAboveRow ? 'R' : 'B');
+            var c = columns[colIndex - offset];
+            if (!c) return;
+            marks.push((c.length > rowIndex) === (c.length > rowIndex - 1) ? 'R' : 'B');
           }
         });
       });
@@ -296,7 +270,7 @@
     }
 
     function bigEyeResultRoad(source) {
-      return (source || rounds).map(r => {
+      return (source || rounds).map(function(r) {
         if (r.result === 'PLAYER') return 'P';
         if (r.result === 'BANKER') return 'B';
         if (r.result === 'TIE') return 'T';
@@ -305,107 +279,93 @@
     }
 
     function derivedRoadWithTies(source, columns, offset) {
-      const base = derivedRoad(columns, offset);
-      const out = [];
-      let baseIndex = 0;
-      (source || rounds).forEach(r => {
-        if (r.result === 'TIE') {
-          out.push('T');
-        } else if (r.result === 'PLAYER' || r.result === 'BANKER') {
-          if (baseIndex < base.length) {
-            out.push(base[baseIndex]);
-            baseIndex++;
-          }
+      var base = derivedRoad(columns, offset);
+      var out = [];
+      var i = 0;
+      (source || rounds).forEach(function(r) {
+        if (r.result === 'TIE') out.push('T');
+        else if (r.result === 'PLAYER' || r.result === 'BANKER') {
+          if (i < base.length) out.push(base[i++]);
         }
       });
       return out;
     }
 
     function roadShapeKey(source) {
-      const cols = bigRoadColumns(source);
-      return cols.slice(-4).map(c => c.length).join('-');
+      return bigRoadColumns(source).slice(-4).map(function(c) { return c.length; }).join('-');
     }
 
     function compositeKey(source, mode) {
-      const main = getMainResults(source);
-      const cols = bigRoadColumns(source);
-      const bigEye = bigEyeResultRoad(source);
-      const small = derivedRoad(cols, 2);
-      const cock = derivedRoad(cols, 3);
-      const pb = main.slice(-6).map(r => sideChar(r.result)).join('');
-      const shape = roadShapeKey(source);
-      const e = bigEye.slice(-6).join('');
-      const s = small.slice(-6).join('');
-      const c = cock.slice(-6).join('');
-
+      var main = getMainResults(source);
+      var cols = bigRoadColumns(source);
+      var pb = main.slice(-6).map(function(r) { return sideChar(r.result); }).join('');
+      var shape = roadShapeKey(source);
+      var e = bigEyeResultRoad(source).slice(-6).join('');
+      var s = derivedRoadWithTies(source, cols, 2).slice(-6).join('');
+      var c = derivedRoadWithTies(source, cols, 3).slice(-6).join('');
       if (mode === 'full') return 'PB:' + pb + '|SH:' + shape + '|E:' + e + '|S:' + s + '|C:' + c;
       if (mode === 'medium') return 'PB:' + pb + '|E:' + e + '|S:' + s;
       if (mode === 'shape') return 'PB:' + pb + '|SH:' + shape;
       return 'PB:' + pb;
     }
 
-    function analyzeComposite(source, length) {
-      const all = source || rounds;
-      const main = getMainResults(all);
-      if (main.length <= 6) {
-        const pb = main.slice(-6).map(r => sideChar(r.result)).join('');
-        return { pick:null, confidence:0, samples:0, playerNext:0, bankerNext:0, playerRate:0, bankerRate:0, tier:'대기', pattern:pb };
-      }
+    function analyzeComposite(source) {
+      var all = source || rounds;
+      var main = getMainResults(all);
+      var pattern = main.slice(-6).map(function(r) { return sideChar(r.result); }).join('');
+      if (main.length <= 6) return emptyAnalysis(pattern);
 
-      const modes = [
+      var modes = [
         { id:'full', label:'완전일치' },
         { id:'medium', label:'파생로드 일치' },
         { id:'shape', label:'원매흐름 일치' },
         { id:'pb', label:'플/뱅 6패턴' }
       ];
 
-      for (const mode of modes) {
-        const target = compositeKey(all, mode.id);
-        let playerNext = 0;
-        let bankerNext = 0;
-
-        for (let i = 6; i < all.length; i++) {
-          const next = all[i];
+      for (var m = 0; m < modes.length; m++) {
+        var mode = modes[m];
+        var target = compositeKey(all, mode.id);
+        var playerNext = 0;
+        var bankerNext = 0;
+        for (var i = 6; i < all.length; i++) {
+          var next = all[i];
           if (next.result !== 'PLAYER' && next.result !== 'BANKER') continue;
-          const before = all.slice(0, i);
+          var before = all.slice(0, i);
           if (getMainResults(before).length < 6) continue;
           if (compositeKey(before, mode.id) === target) {
             if (next.result === 'PLAYER') playerNext++;
             if (next.result === 'BANKER') bankerNext++;
           }
         }
-
-        const samples = playerNext + bankerNext;
+        var samples = playerNext + bankerNext;
         if (samples > 0 || mode.id === 'pb') {
-          const playerRate = samples ? Math.round(playerNext / samples * 100) : 0;
-          const bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
-          const pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
-          const confidence = samples ? Math.max(playerRate, bankerRate) : 0;
-          const pattern = main.slice(-6).map(r => sideChar(r.result)).join('');
-          return { pick, confidence, samples, playerNext, bankerNext, playerRate, bankerRate, tier:mode.label, pattern };
+          var playerRate = samples ? Math.round(playerNext / samples * 100) : 0;
+          var bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
+          var pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
+          var confidence = samples ? Math.max(playerRate, bankerRate) : 0;
+          return { pick:pick, confidence:confidence, samples:samples, playerNext:playerNext, bankerNext:bankerNext, playerRate:playerRate, bankerRate:bankerRate, tier:mode.label, pattern:pattern };
         }
       }
+      return emptyAnalysis(pattern);
+    }
+
+    function emptyAnalysis(pattern) {
+      return { pick:null, confidence:0, samples:0, playerNext:0, bankerNext:0, playerRate:0, bankerRate:0, tier:'대기', pattern:pattern || '' };
     }
 
     function normalizeRounds(raw) {
-      let source = raw;
+      var source = raw;
       if (typeof raw === 'string') {
-        try {
-          source = JSON.parse(raw);
-        } catch {
-          const compact = raw.replace(/[^PBTpbt플뱅타이]/g, '').toUpperCase();
-          if (compact && /^[PBT]+$/.test(compact)) source = compact.split('');
-          else source = raw.replace(/
-/g, '
-').split(/[
-,;| ]+/).filter(Boolean);
+        try { source = JSON.parse(raw); }
+        catch {
+          var compact = raw.replace(/[^PBTpbt]/g, '').toUpperCase();
+          source = compact ? compact.split('') : raw.replace(/\r/g, '\n').split(/[\n,;| ]+/).filter(Boolean);
         }
       }
       if (!Array.isArray(source)) source = source.rounds || source.records || source.history || source.data || source.results || [];
       if (!Array.isArray(source)) return [];
-
-      return source.map((item, index) => {
-        let result, pPair = false, bPair = false, createdAt, oldAiPick;
+      return source.map(function(item, index) {
+        var result, pPair = false, bPair = false, createdAt, oldAiPick;
         if (typeof item === 'string') result = normalizeResult(item);
         else if (item && typeof item === 'object') {
           result = normalizeResult(item.result || item.winner || item.side || item.value || item.type || item.name);
@@ -416,43 +376,26 @@
           oldAiPick = item.aiPickBefore;
         }
         if (!result) return null;
-        return { id:(item && item.id) || makeId() + index, result, playerPair:pPair, bankerPair:bPair, aiPickBefore:oldAiPick || null, createdAt:createdAt || new Date().toISOString() };
+        return { id:(item && item.id) || makeId() + index, result:result, playerPair:pPair, bankerPair:bPair, aiPickBefore:oldAiPick || null, createdAt:createdAt || new Date().toISOString() };
       }).filter(Boolean);
     }
 
-    function forceLoadDefaultData() {
-      rounds = normalizeRounds(DEFAULT_RESULTS_TEXT);
-      saveToBrowser();
-      render();
-      alert('기본 백업 데이터 ' + rounds.length + '개를 적용했습니다.');
-    }
-
     function saveToBrowser() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ rounds, savedAt:new Date().toISOString() })); } catch(e) {}
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ rounds: rounds, savedAt: new Date().toISOString() })); } catch(e) {}
     }
 
     function loadFromBrowser() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          rounds = normalizeRounds(parsed.rounds || parsed);
-          if (rounds.length) return;
-        }
-
-        // 첫 실행 또는 저장 데이터가 없을 때 업로드된 1,311개 백업 데이터를 기본 탑재
-        rounds = normalizeRounds(DEFAULT_RESULTS_TEXT);
-        saveToBrowser();
-      } catch(e) {
-        console.warn(e);
-        rounds = normalizeRounds(DEFAULT_RESULTS_TEXT);
-        saveToBrowser();
-      }
+        var saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+        var parsed = JSON.parse(saved);
+        rounds = normalizeRounds(parsed.rounds || parsed);
+      } catch(e) { console.warn(e); }
     }
 
     function addRound(result) {
-      const beforePrediction = analyzeComposite(rounds).pick;
-      rounds.push({ id:makeId(), result, playerPair, bankerPair, aiPickBefore:beforePrediction, createdAt:new Date().toISOString() });
+      var beforePrediction = analyzeComposite(rounds).pick;
+      rounds.push({ id:makeId(), result:result, playerPair:playerPair, bankerPair:bankerPair, aiPickBefore:beforePrediction, createdAt:new Date().toISOString() });
       playerPair = false;
       bankerPair = false;
       saveToBrowser();
@@ -469,26 +412,26 @@
     }
 
     function aiWinRate(size) {
-      const resolved = rounds.filter(r => (r.result === 'PLAYER' || r.result === 'BANKER') && (r.aiPickBefore === 'PLAYER' || r.aiPickBefore === 'BANKER')).slice(-(size || 50));
-      const total = resolved.length;
-      const wins = resolved.filter(r => r.result === r.aiPickBefore).length;
-      return { total, wins, rate: total ? wins / total * 100 : 0 };
+      var resolved = rounds.filter(function(r) { return (r.result === 'PLAYER' || r.result === 'BANKER') && (r.aiPickBefore === 'PLAYER' || r.aiPickBefore === 'BANKER'); }).slice(-(size || 50));
+      var total = resolved.length;
+      var wins = resolved.filter(function(r) { return r.result === r.aiPickBefore; }).length;
+      return { total:total, wins:wins, rate: total ? wins / total * 100 : 0 };
     }
 
     function streakInfo() {
-      const main = getMainResults(rounds);
+      var main = getMainResults(rounds);
       if (!main.length) return { side:null, count:0 };
-      const last = main[main.length - 1].result;
-      let count = 0;
-      for (let i = main.length - 1; i >= 0; i--) {
+      var last = main[main.length - 1].result;
+      var count = 0;
+      for (var i = main.length - 1; i >= 0; i--) {
         if (main[i].result !== last) break;
         count++;
       }
-      return { side:last, count };
+      return { side:last, count:count };
     }
 
     function riskLevel(analysis) {
-      let risk = 35;
+      var risk = 35;
       if (getMainResults(rounds).length < 20) risk += 25;
       if (analysis.samples < 3) risk += 25;
       if (analysis.confidence < 60) risk += 15;
@@ -499,29 +442,23 @@
     }
 
     function addPairDots(cell, round) {
-      if (round.playerPair) { const b = document.createElement('span'); b.className = 'pair-blue'; cell.appendChild(b); }
-      if (round.bankerPair) { const r = document.createElement('span'); r.className = 'pair-red'; cell.appendChild(r); }
+      if (round.playerPair) { var b = document.createElement('span'); b.className = 'pair-blue'; cell.appendChild(b); }
+      if (round.bankerPair) { var r = document.createElement('span'); r.className = 'pair-red'; cell.appendChild(r); }
     }
 
     function renderBigRoad(columns) {
-      const el = document.getElementById('bigRoad');
+      var el = document.getElementById('bigRoad');
       el.innerHTML = '';
       if (!columns.length) { el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>'; return; }
-      columns.forEach(col => {
-        for (let row = 0; row < 6; row++) {
-          const cell = document.createElement('div'); cell.className = 'cell';
-          const round = col[row];
+      columns.forEach(function(col) {
+        for (var row = 0; row < 6; row++) {
+          var cell = document.createElement('div'); cell.className = 'cell';
+          var round = col[row];
           if (round) {
-            const disc = document.createElement('div');
-            disc.className = 'big-disc ' + meta[round.result].className;
-            disc.textContent = meta[round.result].label;
-            cell.appendChild(disc);
-            addPairDots(cell, round);
+            var disc = document.createElement('div'); disc.className = 'big-disc ' + meta[round.result].className; disc.textContent = meta[round.result].label;
+            cell.appendChild(disc); addPairDots(cell, round);
             if (round.tieCount && round.result !== 'TIE') {
-              const tie = document.createElement('span');
-              tie.className = 'tie-badge';
-              tie.textContent = round.tieCount > 1 ? 'T' + round.tieCount : 'T';
-              cell.appendChild(tie);
+              var tie = document.createElement('span'); tie.className = 'tie-badge'; tie.textContent = round.tieCount > 1 ? 'T' + round.tieCount : 'T'; cell.appendChild(tie);
             }
           }
           el.appendChild(cell);
@@ -530,52 +467,37 @@
     }
 
     function renderDerived(id, marks) {
-      const el = document.getElementById(id);
+      var el = document.getElementById(id);
       el.innerHTML = '';
-      if (!marks.length) {
-        el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
-        return;
-      }
-      marks.forEach(mark => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        const holder = document.createElement('div');
-
+      if (!marks.length) { el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>'; return; }
+      marks.forEach(function(mark) {
+        var cell = document.createElement('div'); cell.className = 'cell';
+        var holder = document.createElement('div');
         if (mark === 'T') {
           holder.className = 'derived-disc disc-tie';
           holder.textContent = 'T';
         } else {
           holder.className = 'derived-disc';
-          const ring = document.createElement('div');
-          ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
+          var ring = document.createElement('div'); ring.className = 'ring ' + (mark === 'R' ? 'red' : '');
           holder.appendChild(ring);
         }
-
-        cell.appendChild(holder);
-        el.appendChild(cell);
+        cell.appendChild(holder); el.appendChild(cell);
       });
     }
 
     function renderBigEyeResultRoad(id, marks) {
-      const el = document.getElementById(id);
+      var el = document.getElementById(id);
       el.innerHTML = '';
-      if (!marks.length) {
-        el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
-        return;
-      }
-      marks.forEach(mark => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        const disc = document.createElement('div');
-        disc.className = 'derived-disc ' + (mark === 'P' ? 'disc-player' : mark === 'B' ? 'disc-banker' : 'disc-tie');
-        disc.textContent = mark;
-        cell.appendChild(disc);
-        el.appendChild(cell);
+      if (!marks.length) { el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>'; return; }
+      marks.forEach(function(mark) {
+        var cell = document.createElement('div'); cell.className = 'cell';
+        var disc = document.createElement('div'); disc.className = 'derived-disc ' + (mark === 'P' ? 'disc-player' : mark === 'B' ? 'disc-banker' : 'disc-tie'); disc.textContent = mark;
+        cell.appendChild(disc); el.appendChild(cell);
       });
     }
 
     function historyChip(round) {
-      const chip = document.createElement('div');
+      var chip = document.createElement('div');
       chip.className = 'history-chip ' + meta[round.result].className;
       chip.textContent = meta[round.result].label;
       addPairDots(chip, round);
@@ -583,19 +505,19 @@
     }
 
     function renderPatternBalls(pattern) {
-      const el = document.getElementById('patternBalls');
+      var el = document.getElementById('patternBalls');
       el.innerHTML = '';
       if (!pattern) { el.innerHTML = '<span class="muted">데이터 부족</span>'; return; }
-      pattern.split('').forEach(x => el.appendChild(historyChip({ result:x === 'P' ? 'PLAYER' : 'BANKER' })));
+      pattern.split('').forEach(function(x) { el.appendChild(historyChip({ result:x === 'P' ? 'PLAYER' : 'BANKER' })); });
     }
 
     function render() {
-      const main = getMainResults(rounds);
-      const columns = bigRoadColumns(rounds);
-      const analysis = analyzeComposite(rounds);
-      const ai = aiWinRate(50);
-      const streak = streakInfo();
-      const risk = riskLevel(analysis);
+      var main = getMainResults(rounds);
+      var columns = bigRoadColumns(rounds);
+      var analysis = analyzeComposite(rounds);
+      var ai = aiWinRate(50);
+      var streak = streakInfo();
+      var risk = riskLevel(analysis);
 
       document.getElementById('playerPairBtn').className = 'pair-pill' + (playerPair ? ' on' : '');
       document.getElementById('bankerPairBtn').className = 'pair-pill' + (bankerPair ? ' on' : '');
@@ -622,9 +544,9 @@
       document.getElementById('recommendConfidence').textContent = analysis.confidence + '%';
       document.getElementById('riskMeter').style.width = risk.value + '%';
 
-      const history = document.getElementById('history');
+      var history = document.getElementById('history');
       history.innerHTML = '';
-      rounds.slice(-30).forEach(r => history.appendChild(historyChip(r)));
+      rounds.slice(-30).forEach(function(r) { history.appendChild(historyChip(r)); });
       if (!rounds.length) history.innerHTML = '<span class="muted">아직 입력된 기록이 없습니다.</span>';
 
       renderBigRoad(columns);
@@ -634,10 +556,10 @@
     }
 
     function saveData() {
-      const data = { app:'baccarat-analyzer-composite-v3', exportedAt:new Date().toISOString(), rounds };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      var data = { app:'baccarat-analyzer-final-working-v1', exportedAt:new Date().toISOString(), rounds:rounds };
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
       a.href = url;
       a.download = 'baccarat-record-' + new Date().toISOString().slice(0,10) + '.json';
       a.click();
@@ -645,15 +567,15 @@
     }
 
     function loadData(event) {
-      const file = event.target.files[0];
+      var file = event.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
+      var reader = new FileReader();
       reader.onload = function() {
         try {
-          const text = String(reader.result);
-          let parsed;
+          var text = String(reader.result);
+          var parsed;
           try { parsed = JSON.parse(text); } catch(e) { parsed = text; }
-          const loaded = normalizeRounds(parsed);
+          var loaded = normalizeRounds(parsed);
           if (!loaded.length) throw new Error('invalid');
           rounds = loaded;
           saveToBrowser();
@@ -668,27 +590,19 @@
     }
 
     function bindEvents() {
-      const btnPlayer = document.getElementById('btnPlayer');
-      if (btnPlayer) btnPlayer.addEventListener('click', () => addRound('PLAYER'));
-      const btnBanker = document.getElementById('btnBanker');
-      if (btnBanker) btnBanker.addEventListener('click', () => addRound('BANKER'));
-      const btnTie = document.getElementById('btnTie');
-      if (btnTie) btnTie.addEventListener('click', () => addRound('TIE'));
-      document.getElementById('playerPairBtn').addEventListener('click', () => { playerPair = !playerPair; render(); });
-      document.getElementById('bankerPairBtn').addEventListener('click', () => { bankerPair = !bankerPair; render(); });
+      document.getElementById('btnPlayer').addEventListener('click', function() { addRound('PLAYER'); });
+      document.getElementById('btnBanker').addEventListener('click', function() { addRound('BANKER'); });
+      document.getElementById('btnTie').addEventListener('click', function() { addRound('TIE'); });
+      document.getElementById('playerPairBtn').addEventListener('click', function() { playerPair = !playerPair; render(); });
+      document.getElementById('bankerPairBtn').addEventListener('click', function() { bankerPair = !bankerPair; render(); });
       document.getElementById('btnUndo').addEventListener('click', undo);
       document.getElementById('btnReset').addEventListener('click', resetAll);
-      const saveBtn = document.getElementById('btnSave');
-      if (saveBtn) saveBtn.addEventListener('click', saveData);
-
-      const defaultBtn = document.getElementById('btnDefault');
-      if (defaultBtn) defaultBtn.addEventListener('click', forceLoadDefaultData);
-      document.getElementById('btnLoad').addEventListener('click', () => document.getElementById('fileInput').click());
-      
+      document.getElementById('btnSave').addEventListener('click', saveData);
+      document.getElementById('btnLoad').addEventListener('click', function() { document.getElementById('fileInput').click(); });
       document.getElementById('fileInput').addEventListener('change', loadData);
     }
 
-    window.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
       loadFromBrowser();
       bindEvents();
       render();
