@@ -72,3 +72,443 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .pair-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      background: #facc15;
+      border-radius: 50%;
+      border: 1px solid white;
+    }
+    .road-wrap {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      min-height: 60px;
+    }
+    .road-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 32px;
+    }
+    .dot-road {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      min-height: 40px;
+    }
+    .dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 3px solid #2563eb;
+    }
+    .dot.r { border-color: #dc2626; }
+    .meter {
+      width: 100%;
+      height: 10px;
+      background: #ddd;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .meter > div {
+      height: 100%;
+      background: #111;
+      width: 0%;
+    }
+    .big { font-size: 32px; font-weight: 900; }
+    .muted { color: #777; font-size: 13px; }
+    .pattern { letter-spacing: 4px; font-size: 24px; font-weight: 900; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>바카라 최고급 분석기 Rebuild</h1>
+      <div class="sub">입력 기록 기반 통계 · 패턴 · 흐름 · 위험도 분석</div>
+      <div class="btn-row">
+        <button class="gray" onclick="undo()">되돌리기</button>
+        <button class="gray" onclick="saveData()">저장</button>
+        <button class="gray" onclick="document.getElementById('fileInput').click()">불러오기</button>
+        <button class="danger" onclick="resetAll()">초기화</button>
+        <input id="fileInput" type="file" accept="application/json" style="display:none" onchange="loadData(event)">
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h2>결과 입력</h2>
+        <div class="sub">타이와 페어는 기록되지만 승률/패턴 계산에서는 제외됩니다.</div>
+        <div class="grid grid-3" style="margin-top:14px;">
+          <button class="blue" onclick="addRound('PLAYER')">플</button>
+          <button class="red" onclick="addRound('BANKER')">뱅</button>
+          <button class="green" onclick="addRound('TIE')">타이</button>
+        </div>
+        <div class="grid grid-2" style="margin-top:10px;">
+          <button id="playerPairBtn" onclick="togglePlayerPair()">플 페어 OFF</button>
+          <button id="bankerPairBtn" onclick="toggleBankerPair()">뱅 페어 OFF</button>
+        </div>
+        <h3>최근 기록</h3>
+        <div id="history" class="history"></div>
+      </div>
+
+      <div>
+        <div class="grid grid-4">
+          <div class="card"><div class="stat-title">전체 기록</div><div id="totalRounds" class="stat-value">0판</div><div id="mainRounds" class="stat-sub">실계산 0판</div></div>
+          <div class="card"><div class="stat-title">최근 50판 플</div><div id="playerRate" class="stat-value">0%</div><div id="playerCount" class="stat-sub">0 / 0</div></div>
+          <div class="card"><div class="stat-title">최근 50판 뱅</div><div id="bankerRate" class="stat-value">0%</div><div id="bankerCount" class="stat-sub">0 / 0</div></div>
+          <div class="card"><div class="stat-title">현재 줄</div><div id="streak" class="stat-value">대기</div><div class="stat-sub">타이 제외</div></div>
+        </div>
+
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>최근 6패턴</h3>
+            <div class="muted">패턴</div>
+            <div id="patternText" class="pattern">------</div>
+            <br>
+            <div class="muted">다음 결과 표본</div>
+            <div id="sampleText">플 0회 · 뱅 0회 · 총 0회</div>
+            <br>
+            <div class="muted">추천 방향</div>
+            <div id="pickText" class="big">대기</div>
+            <div id="confidenceText" class="muted">신뢰도 0%</div>
+          </div>
+          <div class="card">
+            <h3>흐름 점수</h3>
+            <div id="flowScore" class="big">50</div>
+            <div id="flowText" class="muted">대기 · 데이터 부족</div>
+            <div class="meter"><div id="flowMeter"></div></div>
+          </div>
+          <div class="card">
+            <h3>위험도</h3>
+            <div id="riskLabel" class="big">중간</div>
+            <div id="riskText" class="muted">데이터 대기</div>
+            <div class="meter"><div id="riskMeter"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>원매</h2>
+      <div id="bigRoad" class="road-wrap"></div>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card"><h2>육매</h2><div id="bigEye" class="dot-road"></div></div>
+      <div class="card"><h2>중국점</h2><div id="smallRoad" class="dot-road"></div></div>
+      <div class="card"><h2>소강로</h2><div id="cockroach" class="dot-road"></div></div>
+    </div>
+  </div>
+
+  <script>
+    let rounds = [];
+    let playerPair = false;
+    let bankerPair = false;
+
+    const meta = {
+      PLAYER: { label: '플', color: '#2563eb' },
+      BANKER: { label: '뱅', color: '#dc2626' },
+      TIE: { label: '타이', color: '#16a34a' }
+    };
+
+    function makeId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    }
+
+    function addRound(result) {
+      rounds.push({
+        id: makeId(),
+        result,
+        playerPair,
+        bankerPair,
+        createdAt: new Date().toISOString()
+      });
+      playerPair = false;
+      bankerPair = false;
+      render();
+    }
+
+    function togglePlayerPair() {
+      playerPair = !playerPair;
+      render();
+    }
+
+    function toggleBankerPair() {
+      bankerPair = !bankerPair;
+      render();
+    }
+
+    function undo() {
+      rounds.pop();
+      render();
+    }
+
+    function resetAll() {
+      if (confirm('전체 기록을 삭제할까요?')) {
+        rounds = [];
+        render();
+      }
+    }
+
+    function getMainResults() {
+      return rounds.filter(r => r.result === 'PLAYER' || r.result === 'BANKER');
+    }
+
+    function recentWinRate(size = 50) {
+      const main = getMainResults().slice(-size);
+      const total = main.length;
+      const player = main.filter(r => r.result === 'PLAYER').length;
+      const banker = main.filter(r => r.result === 'BANKER').length;
+      return {
+        total,
+        player,
+        banker,
+        playerRate: total ? Math.round(player / total * 100) : 0,
+        bankerRate: total ? Math.round(banker / total * 100) : 0
+      };
+    }
+
+    function streakInfo() {
+      const main = getMainResults();
+      if (!main.length) return { side: null, count: 0 };
+      const last = main[main.length - 1].result;
+      let count = 0;
+      for (let i = main.length - 1; i >= 0; i--) {
+        if (main[i].result !== last) break;
+        count++;
+      }
+      return { side: last, count };
+    }
+
+    function analyzePattern(length = 6) {
+      const main = getMainResults();
+      const current = main.slice(-length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
+      if (main.length <= length) {
+        return { pattern: current, samples: 0, playerNext: 0, bankerNext: 0, pick: null, confidence: 0 };
+      }
+      let playerNext = 0;
+      let bankerNext = 0;
+      for (let i = 0; i <= main.length - length - 1; i++) {
+        const key = main.slice(i, i + length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
+        if (key === current) {
+          const next = main[i + length].result;
+          if (next === 'PLAYER') playerNext++;
+          if (next === 'BANKER') bankerNext++;
+        }
+      }
+      const samples = playerNext + bankerNext;
+      const playerRate = samples ? Math.round(playerNext / samples * 100) : 0;
+      const bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
+      const pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
+      const confidence = samples ? Math.max(playerRate, bankerRate) : 0;
+      return { pattern: current, samples, playerNext, bankerNext, pick, confidence };
+    }
+
+    function flowScore() {
+      const main = getMainResults().slice(-20);
+      if (main.length < 6) return { score: 50, label: '대기', detail: '데이터 부족' };
+      let switches = 0;
+      for (let i = 1; i < main.length; i++) {
+        if (main[i].result !== main[i - 1].result) switches++;
+      }
+      const streak = streakInfo();
+      const switchRate = switches / Math.max(main.length - 1, 1);
+      let score = 50;
+      if (switchRate >= 0.65) score += 20;
+      if (switchRate <= 0.35) score += 20;
+      score += Math.min(streak.count * 8, 35);
+      score = Math.max(0, Math.min(100, Math.round(score)));
+      let label = '보통';
+      if (score >= 80) label = '강함';
+      else if (score >= 65) label = '양호';
+      else if (score <= 45) label = '약함';
+      const detail = switchRate >= 0.65 ? '퐁당 흐름 우세' : switchRate <= 0.35 ? '줄 흐름 우세' : '혼합 흐름';
+      return { score, label, detail };
+    }
+
+    function riskLevel(pattern) {
+      const main = getMainResults();
+      const streak = streakInfo();
+      const recent = main.slice(-12);
+      let switches = 0;
+      for (let i = 1; i < recent.length; i++) {
+        if (recent[i].result !== recent[i - 1].result) switches++;
+      }
+      let risk = 35;
+      if (main.length < 20) risk += 25;
+      if (pattern.samples < 3) risk += 25;
+      if (pattern.confidence < 60) risk += 15;
+      if (streak.count >= 5) risk += 10;
+      if (recent.length >= 10 && switches >= 8) risk += 10;
+      risk = Math.max(0, Math.min(100, risk));
+      if (risk >= 75) return { value: risk, label: '높음', message: '패턴 표본이 약하거나 흐름이 과열됨' };
+      if (risk >= 50) return { value: risk, label: '중간', message: '진입은 가능하지만 보수적으로 확인' };
+      return { value: risk, label: '낮음', message: '상대적으로 안정적인 구간' };
+    }
+
+    function bigRoadColumns() {
+      const main = getMainResults();
+      const columns = [];
+      let current = [];
+      let last = null;
+      main.forEach(round => {
+        if (!last || round.result === last) {
+          current.push(round);
+        } else {
+          columns.push(current);
+          current = [round];
+        }
+        last = round.result;
+      });
+      if (current.length) columns.push(current);
+      return columns;
+    }
+
+    function derivedRoad(columns, offset) {
+      const marks = [];
+      for (let col = offset; col < columns.length; col++) {
+        const current = columns[col];
+        const compare = columns[col - offset];
+        for (let row = 0; row < current.length; row++) {
+          marks.push(compare && compare.length > row ? 'R' : 'B');
+        }
+      }
+      return marks;
+    }
+
+    function chip(round) {
+      const div = document.createElement('div');
+      div.className = 'chip-wrap';
+      const c = document.createElement('div');
+      c.className = 'chip';
+      c.style.background = meta[round.result].color;
+      c.textContent = meta[round.result].label;
+      div.appendChild(c);
+      if (round.playerPair || round.bankerPair) {
+        const dot = document.createElement('div');
+        dot.className = 'pair-dot';
+        div.appendChild(dot);
+      }
+      return div;
+    }
+
+    function renderDotRoad(id, marks) {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      if (!marks.length) {
+        el.innerHTML = '<div class="muted">표시할 데이터가 없습니다.</div>';
+        return;
+      }
+      marks.forEach(m => {
+        const d = document.createElement('div');
+        d.className = 'dot ' + (m === 'R' ? 'r' : '');
+        el.appendChild(d);
+      });
+    }
+
+    function render() {
+      document.getElementById('playerPairBtn').textContent = '플 페어 ' + (playerPair ? 'ON' : 'OFF');
+      document.getElementById('bankerPairBtn').textContent = '뱅 페어 ' + (bankerPair ? 'ON' : 'OFF');
+      document.getElementById('playerPairBtn').className = playerPair ? 'pair-on' : '';
+      document.getElementById('bankerPairBtn').className = bankerPair ? 'pair-on' : '';
+
+      const history = document.getElementById('history');
+      history.innerHTML = '';
+      rounds.slice(-80).forEach(r => history.appendChild(chip(r)));
+      if (!rounds.length) history.innerHTML = '<div class="muted">아직 입력된 기록이 없습니다.</div>';
+
+      const main = getMainResults();
+      const rate = recentWinRate(50);
+      const streak = streakInfo();
+      const pattern = analyzePattern(6);
+      const flow = flowScore();
+      const risk = riskLevel(pattern);
+
+      document.getElementById('totalRounds').textContent = rounds.length + '판';
+      document.getElementById('mainRounds').textContent = '실계산 ' + main.length + '판';
+      document.getElementById('playerRate').textContent = rate.playerRate + '%';
+      document.getElementById('playerCount').textContent = rate.player + ' / ' + rate.total;
+      document.getElementById('bankerRate').textContent = rate.bankerRate + '%';
+      document.getElementById('bankerCount').textContent = rate.banker + ' / ' + rate.total;
+      document.getElementById('streak').textContent = streak.side ? meta[streak.side].label + ' ' + streak.count + '줄' : '대기';
+
+      document.getElementById('patternText').textContent = pattern.pattern || '------';
+      document.getElementById('sampleText').textContent = '플 ' + pattern.playerNext + '회 · 뱅 ' + pattern.bankerNext + '회 · 총 ' + pattern.samples + '회';
+      document.getElementById('pickText').textContent = pattern.pick ? meta[pattern.pick].label : '대기';
+      document.getElementById('pickText').style.color = pattern.pick === 'PLAYER' ? '#2563eb' : pattern.pick === 'BANKER' ? '#dc2626' : '#111';
+      document.getElementById('confidenceText').textContent = '신뢰도 ' + pattern.confidence + '%';
+
+      document.getElementById('flowScore').textContent = flow.score;
+      document.getElementById('flowText').textContent = flow.label + ' · ' + flow.detail;
+      document.getElementById('flowMeter').style.width = flow.score + '%';
+
+      document.getElementById('riskLabel').textContent = risk.label;
+      document.getElementById('riskText').textContent = risk.message;
+      document.getElementById('riskMeter').style.width = risk.value + '%';
+
+      const columns = bigRoadColumns();
+      const bigRoad = document.getElementById('bigRoad');
+      bigRoad.innerHTML = '';
+      if (!columns.length) {
+        bigRoad.innerHTML = '<div class="muted">표시할 데이터가 없습니다.</div>';
+      } else {
+        columns.forEach(col => {
+          const colDiv = document.createElement('div');
+          colDiv.className = 'road-col';
+          col.forEach(r => colDiv.appendChild(chip(r)));
+          bigRoad.appendChild(colDiv);
+        });
+      }
+
+      renderDotRoad('bigEye', derivedRoad(columns, 1));
+      renderDotRoad('smallRoad', derivedRoad(columns, 2));
+      renderDotRoad('cockroach', derivedRoad(columns, 3));
+    }
+
+    function saveData() {
+      const data = {
+        app: 'baccarat-analyzer-rebuild-html-v1',
+        exportedAt: new Date().toISOString(),
+        rounds
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'baccarat-record-' + new Date().toISOString().slice(0,10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function loadData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function() {
+        try {
+          const parsed = JSON.parse(String(reader.result));
+          const loaded = Array.isArray(parsed) ? parsed : parsed.rounds;
+          if (!Array.isArray(loaded)) throw new Error('invalid');
+          rounds = loaded;
+          render();
+        } catch (e) {
+          alert('불러오기 실패: 올바른 저장 파일이 아닙니다.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    render();
+  </script>
+</body>
+</html>
