@@ -64,7 +64,12 @@
           <button class="btnGray" onclick="undoLast()">되돌리기</button>
           <button class="btnDanger" onclick="clearAll()">초기화</button>
         </div>
-        <div class="muted" style="margin-top:10px">페어가 나온 판은 먼저 페어 체크 후 플/뱅/타이를 누르면 됩니다.</div>
+        <div class="buttons" style="margin-top:12px">
+          <button class="btnGold" onclick="exportRecords()">기록 파일 저장</button>
+          <button class="btnGray" onclick="document.getElementById('importFile').click()">기록 파일 불러오기</button>
+        </div>
+        <input id="importFile" type="file" accept="application/json" style="display:none" onchange="importRecords(event)">
+        <div class="muted" style="margin-top:10px">페어가 나온 판은 먼저 페어 체크 후 플/뱅/타이를 누르면 됩니다. 기록 파일을 저장하면 다른 기기에서도 불러올 수 있습니다.</div>
         <div class="stats">
           <div class="stat"><strong id="cntB">0</strong><span>뱅</span></div>
           <div class="stat"><strong id="cntP">0</strong><span>플</span></div>
@@ -136,6 +141,65 @@ function addRound(o){
 }
 function undoLast(){rounds.pop();save();render();}
 function clearAll(){if(prompt('전체 초기화하려면 “초기화” 입력')!=='초기화')return;rounds=[];save();render();}
+
+function exportRecords(){
+  const data={
+    app:'양택조 분석기',
+    version:1,
+    exportedAt:new Date().toISOString(),
+    rounds
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const date=new Date().toISOString().slice(0,10);
+  a.href=url;
+  a.download=`yangtaekjo-records-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function importRecords(event){
+  const file=event.target.files[0];
+  if(!file)return;
+
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      const imported=Array.isArray(data)?data:data.rounds;
+      if(!Array.isArray(imported))throw new Error('기록 배열이 없습니다.');
+
+      const cleaned=imported
+        .map(r=>({
+          o:r.o,
+          pp:!!r.pp,
+          bp:!!r.bp,
+          t:r.t||Date.now()
+        }))
+        .filter(r=>['B','P','T'].includes(r.o));
+
+      if(!cleaned.length){
+        alert('불러올 수 있는 기록이 없습니다.');
+        return;
+      }
+
+      const mode=confirm('확인을 누르면 기존 기록에 이어붙입니다.
+취소를 누르면 기존 기록을 지우고 파일 기록으로 교체합니다.');
+      rounds=mode?[...rounds,...cleaned]:cleaned;
+      save();
+      render();
+      alert(`기록 ${cleaned.length}개 불러오기 완료`);
+    }catch(e){
+      alert('기록 파일을 불러오지 못했습니다: '+e.message);
+    }finally{
+      event.target.value='';
+    }
+  };
+  reader.readAsText(file);
+}
 function showRoad(type){activeRoad=type;renderRoad();}
 
 function buildBigRoad(){
