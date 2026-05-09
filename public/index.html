@@ -3,267 +3,222 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>양택조 최고급 분석기</title>
+  <title>바카라 최고급 분석기</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
+      min-height: 100vh;
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      color: #111;
+      color: #f5f7fb;
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.22), transparent 28%),
+        radial-gradient(circle at top right, rgba(220,38,38,.18), transparent 25%),
+        linear-gradient(135deg, #05070a, #111827 45%, #05070a);
     }
-    .wrap {
-      max-width: 1300px;
-      margin: 0 auto;
-      padding: 16px;
+    .wrap { max-width: 1500px; margin: 0 auto; padding: 10px; }
+    .panel {
+      background: linear-gradient(180deg, rgba(18,24,32,.94), rgba(7,11,16,.96));
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
     }
-    .header, .card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      margin-bottom: 14px;
-    }
-    h1 { margin: 0; font-size: 26px; }
-    .sub { color: #666; font-size: 14px; margin-top: 6px; }
-    .grid { display: grid; gap: 14px; }
-    .grid-2 { grid-template-columns: 360px 1fr; }
-    .grid-3 { grid-template-columns: repeat(3, 1fr); }
-    .grid-4 { grid-template-columns: repeat(4, 1fr); }
-    @media (max-width: 900px) {
-      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-    }
+    .top-grid { display: grid; grid-template-columns: 1.25fr .62fr .98fr .32fr; gap: 6px; margin-bottom: 8px; }
+    .panel-pad { padding: 16px; }
+    h1, h2, h3 { margin: 0; }
+    h2 { font-size: 16px; margin-bottom: 12px; }
+    .muted { color: #a5adba; font-size: 12px; }
+    .divider { width: 1px; background: rgba(255,255,255,.09); }
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .input-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     button {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 700;
-      cursor: pointer;
-      background: #222;
-      color: white;
-    }
-    button:disabled { opacity: .4; cursor: not-allowed; }
-    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-    .blue { background: #2563eb; }
-    .red { background: #dc2626; }
-    .green { background: #16a34a; }
-    .gray { background: #555; }
-    .danger { background: #991b1b; }
-    .pair-on { background: #f59e0b; color: #111; }
-    .stat-title { color: #666; font-size: 13px; }
-    .stat-value { font-size: 28px; font-weight: 900; margin-top: 6px; }
-    .stat-sub { color: #777; font-size: 12px; margin-top: 4px; }
-    .history {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      max-height: 180px;
-      overflow-y: auto;
-      background: #f8f8f8;
-      padding: 10px;
-      border-radius: 12px;
-    }
-    .chip-wrap { position: relative; }
-    .chip {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 7px;
+      padding: 11px 14px;
       font-weight: 900;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(180deg, #263241, #151b24);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 8px 18px rgba(0,0,0,.22);
     }
-    .pair-dot {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 10px;
-      height: 10px;
-      background: #facc15;
-      border-radius: 50%;
-      border: 1px solid white;
+    button:hover { filter: brightness(1.1); }
+    .btn-blue { background: linear-gradient(180deg, #1d5bd6, #0d2b69); border-color: rgba(74,144,255,.45); }
+    .btn-red { background: linear-gradient(180deg, #c51e2f, #650914); border-color: rgba(255,86,105,.45); }
+    .btn-green { background: linear-gradient(180deg, #168a35, #064018); border-color: rgba(75,220,117,.35); }
+    .btn-pair.on { outline: 2px solid #facc15; }
+    .circle-label {
+      width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 900; margin-right: 8px; box-shadow: inset 0 1px 5px rgba(255,255,255,.35), 0 5px 18px rgba(0,0,0,.35);
     }
-    .road-wrap {
-      display: grid;
-      grid-auto-flow: column;
-      grid-template-rows: repeat(6, 34px);
-      grid-auto-columns: 34px;
-      gap: 0;
+    .blue-grad { background: radial-gradient(circle at 35% 25%, #6ba2ff, #1d5bd6 55%, #0a245c); }
+    .red-grad { background: radial-gradient(circle at 35% 25%, #ff7381, #c51e2f 55%, #5c0710); }
+    .green-grad { background: radial-gradient(circle at 35% 25%, #68db7d, #168a35 55%, #063b16); }
+    .btn-sub { display: block; font-size: 11px; opacity: .85; margin-top: 3px; }
+    .pair-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); font-size: 12px; cursor: pointer; }
+    .pair-pill.on { background: rgba(250,204,21,.12); border-color: rgba(250,204,21,.55); }
+    .mini-ball { width: 15px; height: 15px; border-radius: 50%; display:inline-block; }
+    .mini-blue { background: #2563eb; box-shadow: 0 0 10px rgba(37,99,235,.8); }
+    .mini-red { background: #dc2626; box-shadow: 0 0 10px rgba(220,38,38,.8); }
+    .main-grid { display: grid; grid-template-columns: 1fr 174px; gap: 8px; margin-bottom: 8px; }
+    .sub-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .score-big { font-size: 36px; font-weight: 900; line-height: 1; }
+    .blue-text { color: #2f89ff; }
+    .red-text { color: #ff3349; }
+    .yellow-text { color: #facc15; }
+    .green-text { color: #22c55e; }
+
+    .road-board {
+      position: relative;
       overflow-x: auto;
       overflow-y: hidden;
-      padding: 8px;
-      min-height: 228px;
-      background: #fff;
-      border: 2px solid #d7d7d7;
-      border-radius: 10px;
-      background-image:
-        linear-gradient(#e6e6e6 1px, transparent 1px),
-        linear-gradient(90deg, #e6e6e6 1px, transparent 1px);
-      background-size: 34px 34px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 5px;
+      background:
+        linear-gradient(rgba(255,255,255,.115) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.115) 1px, transparent 1px),
+        radial-gradient(circle at 40% 20%, rgba(255,255,255,.04), transparent 35%),
+        #0c1116;
+      box-shadow: inset 0 0 18px rgba(0,0,0,.55);
     }
-    .road-col { display: contents; }
-    .casino-cell {
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
+    .big-board { display: grid; grid-template-rows: repeat(6, 50px); grid-auto-flow: column; grid-auto-columns: 50px; min-height: 300px; background-size: 50px 50px, 50px 50px, auto, auto; }
+    .small-board { display: grid; grid-template-rows: repeat(6, 36px); grid-auto-flow: column; grid-auto-columns: 36px; min-height: 216px; background-size: 36px 36px, 36px 36px, auto, auto; }
+    .cell { display:flex; align-items:center; justify-content:center; position:relative; }
+    .big-disc {
+      width: 40px; height: 40px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+      font-size: 22px; font-weight: 900; color: white; border: 2px solid rgba(255,255,255,.22);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,.22), inset 0 -6px 12px rgba(0,0,0,.32), 0 4px 12px rgba(0,0,0,.42);
     }
-    .big-road-disc {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      border: 4px solid #2563eb;
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 900;
+    .disc-player { background: radial-gradient(circle at 35% 25%, #70a8ff, #1d5bd6 55%, #071b48); }
+    .disc-banker { background: radial-gradient(circle at 35% 25%, #ff7180, #c71e30 55%, #520710); }
+    .disc-tie { background: radial-gradient(circle at 35% 25%, #69e582, #168a35 55%, #052f12); }
+    .derived-disc { width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.035); display:flex; align-items:center; justify-content:center; }
+    .ring { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #2563eb; background: rgba(8,12,18,.95); }
+    .ring.red { border-color: #dc2626; }
+    .pair-blue, .pair-red { position:absolute; width: 10px; height: 10px; border-radius:50%; border:1px solid rgba(255,255,255,.9); z-index:2; }
+    .pair-blue { left: 4px; bottom: 4px; background:#2563eb; box-shadow:0 0 8px #2563eb; }
+    .pair-red { right: 4px; top: 4px; background:#dc2626; box-shadow:0 0 8px #dc2626; }
+    .small-board .pair-blue, .small-board .pair-red { width: 7px; height: 7px; }
+    .road-empty { padding: 18px; color: #6f7785; font-size: 13px; }
+    .side-legend { padding: 14px; display:flex; flex-direction:column; gap:12px; }
+    .legend-box { border: 1px solid rgba(255,255,255,.11); border-radius: 7px; padding: 12px; background: rgba(255,255,255,.03); }
+    .legend-row { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:13px; }
+    .history-row { display:flex; gap:6px; overflow-x:auto; padding: 10px 0 2px; }
+    .history-chip { width: 22px; height: 22px; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12px; color:white; position:relative; flex:0 0 auto; }
+    .meter { width: 100%; height: 8px; background: rgba(255,255,255,.09); border-radius: 999px; overflow:hidden; margin-top:10px; }
+    .meter div { height:100%; background: linear-gradient(90deg, #2563eb, #facc15, #dc2626); width:0; }
+    .prediction-line { display:grid; grid-template-columns: repeat(3, 1fr); border:1px solid rgba(255,255,255,.1); border-radius:6px; overflow:hidden; margin-top:10px; }
+    .prediction-line div { padding:10px; text-align:center; border-right:1px solid rgba(255,255,255,.08); }
+    .prediction-line div:last-child { border-right:0; }
+    .hidden-input { display:none; }
+    @media (max-width: 1000px) {
+      .top-grid, .main-grid, .sub-grid, .bottom-grid { grid-template-columns: 1fr; }
+      .big-board { grid-template-rows: repeat(6, 42px); grid-auto-columns: 42px; min-height:252px; background-size:42px 42px,42px 42px,auto,auto; }
+      .big-disc { width:34px; height:34px; font-size:18px; }
     }
-    .big-road-disc.banker { border-color: #dc2626; color: #dc2626; }
-    .big-road-disc.player { border-color: #2563eb; color: #2563eb; }
-    .pair-blue {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      left: 2px;
-      bottom: 2px;
-      background: #2563eb;
-      border-radius: 50%;
-      border: 1px solid white;
-    }
-    .pair-red {
-      position: absolute;
-      width: 8px;
-      height: 8px;
-      right: 2px;
-      top: 2px;
-      background: #dc2626;
-      border-radius: 50%;
-      border: 1px solid white;
-    }
-    .dot-road {
-      display: grid;
-      grid-template-rows: repeat(6, 24px);
-      grid-auto-flow: column;
-      grid-auto-columns: 24px;
-      gap: 0;
-      overflow-x: auto;
-      padding: 8px;
-      min-height: 172px;
-      border: 2px solid #d7d7d7;
-      border-radius: 10px;
-      background-image:
-        linear-gradient(#e6e6e6 1px, transparent 1px),
-        linear-gradient(90deg, #e6e6e6 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
-    .derived-cell {
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .dot {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      border: 3px solid #2563eb;
-      background: white;
-    }
-    .dot.r { border-color: #dc2626; }
-    .road-empty {
-      padding: 12px;
-      color: #777;
-      font-size: 13px;
-    }
-    .big { font-size: 32px; font-weight: 900; }
-    .muted { color: #777; font-size: 13px; }
-    .pattern { letter-spacing: 4px; font-size: 24px; font-weight: 900; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="header">
-      <h1>바카라 최고급 분석기 Rebuild</h1>
-      <div class="sub">입력 기록 기반 통계 · 패턴 · 흐름 · 위험도 분석</div>
-      <div class="btn-row">
-        <button class="gray" onclick="undo()">되돌리기</button>
-        <button class="gray" onclick="saveData()">저장</button>
-        <button class="gray" onclick="document.getElementById('fileInput').click()">불러오기</button>
-        <button class="danger" onclick="resetAll()">초기화</button>
-        <input id="fileInput" type="file" accept="application/json" style="display:none" onchange="loadData(event)">
-      </div>
-    </div>
-
-    <div class="grid grid-2">
-      <div class="card">
+    <div class="top-grid">
+      <div class="panel panel-pad">
         <h2>결과 입력</h2>
-        <div class="sub">타이와 페어는 기록되지만 승률/패턴 계산에서는 제외됩니다.</div>
-        <div class="grid grid-3" style="margin-top:14px;">
-          <button class="blue" onclick="addRound('PLAYER')">플</button>
-          <button class="red" onclick="addRound('BANKER')">뱅</button>
-          <button class="green" onclick="addRound('TIE')">타이</button>
+        <div class="input-buttons">
+          <button class="btn-blue" onclick="addRound('PLAYER')"><span class="circle-label blue-grad">P</span>PLAYER<span class="btn-sub">플레이어</span></button>
+          <button class="btn-red" onclick="addRound('BANKER')"><span class="circle-label red-grad">B</span>BANKER<span class="btn-sub">뱅커</span></button>
+          <button class="btn-green" onclick="addRound('TIE')"><span class="circle-label green-grad">T</span>TIE<span class="btn-sub">타이</span></button>
         </div>
-        <div class="grid grid-2" style="margin-top:10px;">
-          <button id="playerPairBtn" onclick="togglePlayerPair()">플 페어 OFF</button>
-          <button id="bankerPairBtn" onclick="toggleBankerPair()">뱅 페어 OFF</button>
-        </div>
-        <h3>최근 기록</h3>
-        <div id="history" class="history"></div>
       </div>
 
-      <div>
-        <div class="grid grid-4">
-          <div class="card"><div class="stat-title">전체 기록</div><div id="totalRounds" class="stat-value">0판</div><div id="mainRounds" class="stat-sub">실계산 0판</div></div>
-          <div class="card"><div class="stat-title">최근 50판 플</div><div id="playerRate" class="stat-value">0%</div><div id="playerCount" class="stat-sub">0 / 0</div></div>
-          <div class="card"><div class="stat-title">최근 50판 뱅</div><div id="bankerRate" class="stat-value">0%</div><div id="bankerCount" class="stat-sub">0 / 0</div></div>
-          <div class="card"><div class="stat-title">현재 줄</div><div id="streak" class="stat-value">대기</div><div class="stat-sub">타이 제외</div></div>
+      <div class="panel panel-pad">
+        <h2>페어 선택 <span class="muted">(선택)</span></h2>
+        <div class="row">
+          <div id="playerPairBtn" class="pair-pill" onclick="togglePlayerPair()"><span class="mini-ball mini-blue"></span>플 페어</div>
+          <div id="bankerPairBtn" class="pair-pill" onclick="toggleBankerPair()"><span class="mini-ball mini-red"></span>뱅 페어</div>
         </div>
+      </div>
 
-        <div class="grid grid-3">
-          <div class="card">
-            <h3>최근 6패턴</h3>
-            <div class="muted">패턴</div>
-            <div id="patternText" class="pattern">------</div>
-            <br>
-            <div class="muted">다음 결과 표본</div>
-            <div id="sampleText">플 0회 · 뱅 0회 · 총 0회</div>
-            <br>
-            <div class="muted">추천 방향</div>
-            <div id="pickText" class="big">대기</div>
-            <div id="confidenceText" class="muted">신뢰도 0%</div>
-          </div>
-          <div class="card">
-            <h3>흐름 점수</h3>
-            <div id="flowScore" class="big">50</div>
-            <div id="flowText" class="muted">대기 · 데이터 부족</div>
-            <div class="meter"><div id="flowMeter"></div></div>
-          </div>
-          <div class="card">
-            <h3>위험도</h3>
-            <div id="riskLabel" class="big">중간</div>
-            <div id="riskText" class="muted">데이터 대기</div>
-            <div class="meter"><div id="riskMeter"></div></div>
-          </div>
+      <div class="panel panel-pad">
+        <div class="row">
+          <button onclick="undo()">↩ 되돌리기</button>
+          <button onclick="resetAll()">⟳ 초기화</button>
+          <button onclick="saveData()">⇩ 저장</button>
+          <button onclick="document.getElementById('fileInput').click()">⇧ 불러오기</button>
+          <input id="fileInput" class="hidden-input" type="file" accept="application/json" onchange="loadData(event)">
         </div>
+      </div>
+
+      <div class="panel panel-pad">
+        <div class="muted">전체 게임 수</div>
+        <div id="totalRounds" class="score-big">0</div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>원매</h2>
-      <div id="bigRoad" class="road-wrap"></div>
+    <div class="top-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+      <div class="panel panel-pad"><div class="muted">AI 최근 50판 승률</div><div id="aiRate" class="score-big yellow-text">0.0%</div><div id="aiCount" class="muted">적중 0 / 예측 0</div></div>
+      <div class="panel panel-pad"><div class="muted">AI 다음 예측</div><div id="nextPick" class="score-big">대기</div><div id="nextConfidence" class="muted">신뢰도 0%</div></div>
+      <div class="panel panel-pad"><div class="muted">현재 줄</div><div id="streakText" class="score-big">대기</div><div class="muted">타이 제외</div></div>
+      <div class="panel panel-pad"><div class="muted">실계산 게임</div><div id="mainRounds" class="score-big">0</div><div class="muted">타이 제외</div></div>
     </div>
 
-    <div class="grid grid-3">
-      <div class="card"><h2>육매</h2><div id="bigEye" class="dot-road"></div></div>
-      <div class="card"><h2>중국점</h2><div id="smallRoad" class="dot-road"></div></div>
-      <div class="card"><h2>소강로</h2><div id="cockroach" class="dot-road"></div></div>
+    <div class="main-grid">
+      <div class="panel panel-pad">
+        <h2>원매 (Big Road)</h2>
+        <div id="bigRoad" class="road-board big-board"></div>
+      </div>
+      <div class="panel side-legend">
+        <div class="legend-box">
+          <div class="legend-row"><span class="history-chip disc-player">P</span>플레이어</div>
+          <div class="legend-row"><span class="history-chip disc-banker">B</span>뱅커</div>
+          <div class="legend-row"><span class="history-chip disc-tie">T</span>타이</div>
+        </div>
+        <div class="legend-box">
+          <div class="muted">페어 표시</div>
+          <div class="legend-row"><span class="mini-ball mini-blue"></span>플 페어</div>
+          <div class="legend-row"><span class="mini-ball mini-red"></span>뱅 페어</div>
+          <div class="legend-row"><span class="mini-ball mini-blue"></span><span class="mini-ball mini-red"></span>쌍 페어</div>
+        </div>
+        <button onclick="resetAll()">전체 지우기</button>
+      </div>
+    </div>
+
+    <div class="sub-grid">
+      <div class="panel panel-pad"><h2>육매 (Big Eye Road)</h2><div id="bigEye" class="road-board small-board"></div></div>
+      <div class="panel panel-pad"><h2>중국점 (Small Road)</h2><div id="smallRoad" class="road-board small-board"></div></div>
+      <div class="panel panel-pad"><h2>소강로 (Cockroach Road)</h2><div id="cockroach" class="road-board small-board"></div></div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="panel panel-pad">
+        <h2>최근 6게임 패턴 분석</h2>
+        <div id="patternBalls" class="history-row"></div>
+        <div class="muted">다음 결과 예측 참고용</div>
+        <div class="prediction-line">
+          <div><span class="muted">플레이어</span><br><b id="patternP" class="blue-text">0%</b></div>
+          <div><span class="muted">뱅커</span><br><b id="patternB" class="red-text">0%</b></div>
+          <div><span class="muted">표본</span><br><b id="patternSamples">0</b></div>
+        </div>
+        <div class="row" style="margin-top:12px;"><span class="muted">추천 방향:</span><b id="recommendText">대기</b><span class="muted">신뢰도:</span><b id="recommendConfidence" class="yellow-text">0%</b></div>
+      </div>
+
+      <div class="panel panel-pad">
+        <h2>흐름 분석</h2>
+        <div class="prediction-line">
+          <div><span class="muted">흐름 점수</span><br><b id="flowScore" class="blue-text">50</b></div>
+          <div><span class="muted">위험도</span><br><b id="riskLabel" class="yellow-text">중간</b></div>
+          <div><span class="muted">패턴 신뢰도</span><br><b id="flowConfidence">0%</b></div>
+        </div>
+        <div class="meter"><div id="riskMeter"></div></div>
+        <div id="flowText" class="muted" style="margin-top:10px;">데이터 부족</div>
+      </div>
+
+      <div class="panel panel-pad">
+        <h2>최근 기록 <span class="muted">(최신 30게임)</span></h2>
+        <div id="history" class="history-row"></div>
+        <div class="muted" style="margin-top:12px;">※ AI 승률은 예측 방향이 플/뱅으로 나온 뒤, 다음 실제 결과가 플/뱅일 때만 집계합니다. 타이/페어는 제외됩니다.</div>
+      </div>
     </div>
   </div>
 
@@ -273,21 +228,44 @@
     let bankerPair = false;
 
     const meta = {
-      PLAYER: { label: '플', color: '#2563eb' },
-      BANKER: { label: '뱅', color: '#dc2626' },
-      TIE: { label: '타이', color: '#16a34a' }
+      PLAYER: { label: 'P', kr: '플', color: '#2563eb', className: 'disc-player', text: 'blue-text' },
+      BANKER: { label: 'B', kr: '뱅', color: '#dc2626', className: 'disc-banker', text: 'red-text' },
+      TIE: { label: 'T', kr: '타이', color: '#16a34a', className: 'disc-tie', text: 'green-text' }
     };
 
-    function makeId() {
-      return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    function makeId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+    function getMainResults(source = rounds) { return source.filter(r => r.result === 'PLAYER' || r.result === 'BANKER'); }
+
+    function analyzePattern(source = rounds, length = 6) {
+      const main = getMainResults(source);
+      const current = main.slice(-length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
+      if (main.length <= length) return { pattern: current, samples: 0, playerNext: 0, bankerNext: 0, playerRate: 0, bankerRate: 0, pick: null, confidence: 0 };
+      let playerNext = 0, bankerNext = 0;
+      for (let i = 0; i <= main.length - length - 1; i++) {
+        const key = main.slice(i, i + length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
+        if (key === current) {
+          const next = main[i + length].result;
+          if (next === 'PLAYER') playerNext++;
+          if (next === 'BANKER') bankerNext++;
+        }
+      }
+      const samples = playerNext + bankerNext;
+      const playerRate = samples ? Math.round(playerNext / samples * 100) : 0;
+      const bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
+      const pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
+      const confidence = samples ? Math.max(playerRate, bankerRate) : 0;
+      return { pattern: current, samples, playerNext, bankerNext, playerRate, bankerRate, pick, confidence };
     }
 
     function addRound(result) {
+      const beforePrediction = analyzePattern(rounds, 6).pick;
       rounds.push({
         id: makeId(),
         result,
         playerPair,
         bankerPair,
+        aiPickBefore: beforePrediction,
         createdAt: new Date().toISOString()
       });
       playerPair = false;
@@ -295,44 +273,18 @@
       render();
     }
 
-    function togglePlayerPair() {
-      playerPair = !playerPair;
-      render();
-    }
+    function togglePlayerPair() { playerPair = !playerPair; render(); }
+    function toggleBankerPair() { bankerPair = !bankerPair; render(); }
+    function undo() { rounds.pop(); render(); }
+    function resetAll() { if (confirm('전체 기록을 삭제할까요?')) { rounds = []; render(); } }
 
-    function toggleBankerPair() {
-      bankerPair = !bankerPair;
-      render();
-    }
-
-    function undo() {
-      rounds.pop();
-      render();
-    }
-
-    function resetAll() {
-      if (confirm('전체 기록을 삭제할까요?')) {
-        rounds = [];
-        render();
-      }
-    }
-
-    function getMainResults() {
-      return rounds.filter(r => r.result === 'PLAYER' || r.result === 'BANKER');
-    }
-
-    function recentWinRate(size = 50) {
-      const main = getMainResults().slice(-size);
-      const total = main.length;
-      const player = main.filter(r => r.result === 'PLAYER').length;
-      const banker = main.filter(r => r.result === 'BANKER').length;
-      return {
-        total,
-        player,
-        banker,
-        playerRate: total ? Math.round(player / total * 100) : 0,
-        bankerRate: total ? Math.round(banker / total * 100) : 0
-      };
+    function aiWinRate(size = 50) {
+      const resolved = rounds
+        .filter(r => (r.result === 'PLAYER' || r.result === 'BANKER') && (r.aiPickBefore === 'PLAYER' || r.aiPickBefore === 'BANKER'))
+        .slice(-size);
+      const total = resolved.length;
+      const wins = resolved.filter(r => r.result === r.aiPickBefore).length;
+      return { total, wins, rate: total ? (wins / total * 100) : 0 };
     }
 
     function streakInfo() {
@@ -347,37 +299,11 @@
       return { side: last, count };
     }
 
-    function analyzePattern(length = 6) {
-      const main = getMainResults();
-      const current = main.slice(-length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
-      if (main.length <= length) {
-        return { pattern: current, samples: 0, playerNext: 0, bankerNext: 0, pick: null, confidence: 0 };
-      }
-      let playerNext = 0;
-      let bankerNext = 0;
-      for (let i = 0; i <= main.length - length - 1; i++) {
-        const key = main.slice(i, i + length).map(r => r.result === 'PLAYER' ? 'P' : 'B').join('');
-        if (key === current) {
-          const next = main[i + length].result;
-          if (next === 'PLAYER') playerNext++;
-          if (next === 'BANKER') bankerNext++;
-        }
-      }
-      const samples = playerNext + bankerNext;
-      const playerRate = samples ? Math.round(playerNext / samples * 100) : 0;
-      const bankerRate = samples ? Math.round(bankerNext / samples * 100) : 0;
-      const pick = samples ? (playerRate >= bankerRate ? 'PLAYER' : 'BANKER') : null;
-      const confidence = samples ? Math.max(playerRate, bankerRate) : 0;
-      return { pattern: current, samples, playerNext, bankerNext, pick, confidence };
-    }
-
     function flowScore() {
       const main = getMainResults().slice(-20);
       if (main.length < 6) return { score: 50, label: '대기', detail: '데이터 부족' };
       let switches = 0;
-      for (let i = 1; i < main.length; i++) {
-        if (main[i].result !== main[i - 1].result) switches++;
-      }
+      for (let i = 1; i < main.length; i++) if (main[i].result !== main[i - 1].result) switches++;
       const streak = streakInfo();
       const switchRate = switches / Math.max(main.length - 1, 1);
       let score = 50;
@@ -385,10 +311,7 @@
       if (switchRate <= 0.35) score += 20;
       score += Math.min(streak.count * 8, 35);
       score = Math.max(0, Math.min(100, Math.round(score)));
-      let label = '보통';
-      if (score >= 80) label = '강함';
-      else if (score >= 65) label = '양호';
-      else if (score <= 45) label = '약함';
+      const label = score >= 80 ? '강함' : score >= 65 ? '양호' : score <= 45 ? '약함' : '보통';
       const detail = switchRate >= 0.65 ? '퐁당 흐름 우세' : switchRate <= 0.35 ? '줄 흐름 우세' : '혼합 흐름';
       return { score, label, detail };
     }
@@ -398,9 +321,7 @@
       const streak = streakInfo();
       const recent = main.slice(-12);
       let switches = 0;
-      for (let i = 1; i < recent.length; i++) {
-        if (recent[i].result !== recent[i - 1].result) switches++;
-      }
+      for (let i = 1; i < recent.length; i++) if (recent[i].result !== recent[i - 1].result) switches++;
       let risk = 35;
       if (main.length < 20) risk += 25;
       if (pattern.samples < 3) risk += 25;
@@ -416,15 +337,10 @@
     function bigRoadColumns() {
       const main = getMainResults();
       const columns = [];
-      let current = [];
-      let last = null;
+      let current = [], last = null;
       main.forEach(round => {
-        if (!last || round.result === last) {
-          current.push(round);
-        } else {
-          columns.push(current);
-          current = [round];
-        }
+        if (!last || round.result === last) current.push(round);
+        else { columns.push(current); current = [round]; }
         last = round.result;
       });
       if (current.length) columns.push(current);
@@ -436,151 +352,115 @@
       for (let col = offset; col < columns.length; col++) {
         const current = columns[col];
         const compare = columns[col - offset];
-        for (let row = 0; row < current.length; row++) {
-          marks.push(compare && compare.length > row ? 'R' : 'B');
-        }
+        for (let row = 0; row < current.length; row++) marks.push(compare && compare.length > row ? 'R' : 'B');
       }
       return marks;
     }
 
-    function chip(round) {
-      const div = document.createElement('div');
-      div.className = 'chip-wrap';
-      const c = document.createElement('div');
-      c.className = 'chip';
-      c.style.background = meta[round.result].color;
-      c.textContent = meta[round.result].label;
-      div.appendChild(c);
+    function addPairDots(cell, round) {
       if (round.playerPair) {
-        const blue = document.createElement('div');
-        blue.className = 'pair-blue';
-        div.appendChild(blue);
+        const blue = document.createElement('span'); blue.className = 'pair-blue'; cell.appendChild(blue);
       }
       if (round.bankerPair) {
-        const red = document.createElement('div');
-        red.className = 'pair-red';
-        div.appendChild(red);
+        const red = document.createElement('span'); red.className = 'pair-red'; cell.appendChild(red);
       }
-      return div;
-    }
-
-    function renderDotRoad(id, marks) {
-      const el = document.getElementById(id);
-      el.innerHTML = '';
-      if (!marks.length) {
-        el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
-        return;
-      }
-      marks.forEach(m => {
-        const cell = document.createElement('div');
-        cell.className = 'derived-cell';
-        const d = document.createElement('div');
-        d.className = 'dot ' + (m === 'R' ? 'r' : '');
-        cell.appendChild(d);
-        el.appendChild(cell);
-      });
     }
 
     function renderBigRoad(columns) {
-      const bigRoad = document.getElementById('bigRoad');
-      bigRoad.innerHTML = '';
-      if (!columns.length) {
-        bigRoad.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>';
-        return;
-      }
-
+      const el = document.getElementById('bigRoad');
+      el.innerHTML = '';
+      if (!columns.length) { el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>'; return; }
       columns.forEach(col => {
         for (let row = 0; row < 6; row++) {
-          const cell = document.createElement('div');
-          cell.className = 'casino-cell';
+          const cell = document.createElement('div'); cell.className = 'cell';
           const round = col[row];
           if (round) {
-            const disc = document.createElement('div');
-            disc.className = 'big-road-disc ' + (round.result === 'BANKER' ? 'banker' : 'player');
-            disc.textContent = round.result === 'BANKER' ? 'B' : 'P';
-            cell.appendChild(disc);
-            if (round.playerPair) {
-              const bluePair = document.createElement('div');
-              bluePair.className = 'pair-blue';
-              cell.appendChild(bluePair);
-            }
-            if (round.bankerPair) {
-              const redPair = document.createElement('div');
-              redPair.className = 'pair-red';
-              cell.appendChild(redPair);
-            }
+            const disc = document.createElement('div'); disc.className = 'big-disc ' + meta[round.result].className; disc.textContent = meta[round.result].label;
+            cell.appendChild(disc); addPairDots(cell, round);
           }
-          bigRoad.appendChild(cell);
+          el.appendChild(cell);
         }
       });
     }
 
-    function render() {
-      document.getElementById('playerPairBtn').textContent = '플 페어 ' + (playerPair ? 'ON' : 'OFF');
-      document.getElementById('bankerPairBtn').textContent = '뱅 페어 ' + (bankerPair ? 'ON' : 'OFF');
-      document.getElementById('playerPairBtn').className = playerPair ? 'pair-on' : '';
-      document.getElementById('bankerPairBtn').className = bankerPair ? 'pair-on' : '';
+    function renderDerived(id, marks) {
+      const el = document.getElementById(id); el.innerHTML = '';
+      if (!marks.length) { el.innerHTML = '<div class="road-empty">표시할 데이터가 없습니다.</div>'; return; }
+      marks.forEach(m => {
+        const cell = document.createElement('div'); cell.className = 'cell';
+        const holder = document.createElement('div'); holder.className = 'derived-disc';
+        const ring = document.createElement('div'); ring.className = 'ring ' + (m === 'R' ? 'red' : '');
+        holder.appendChild(ring); cell.appendChild(holder); el.appendChild(cell);
+      });
+    }
 
-      const history = document.getElementById('history');
-      history.innerHTML = '';
-      rounds.slice(-80).forEach(r => history.appendChild(chip(r)));
-      if (!rounds.length) history.innerHTML = '<div class="muted">아직 입력된 기록이 없습니다.</div>';
+    function historyChip(round) {
+      const chip = document.createElement('div'); chip.className = 'history-chip ' + meta[round.result].className; chip.textContent = meta[round.result].label;
+      addPairDots(chip, round); return chip;
+    }
+
+    function renderPatternBalls(patternString) {
+      const el = document.getElementById('patternBalls'); el.innerHTML = '';
+      if (!patternString) { el.innerHTML = '<span class="muted">데이터 부족</span>'; return; }
+      patternString.split('').forEach(x => {
+        const r = { result: x === 'P' ? 'PLAYER' : 'BANKER', playerPair:false, bankerPair:false };
+        el.appendChild(historyChip(r));
+      });
+    }
+
+    function render() {
+      document.getElementById('playerPairBtn').className = 'pair-pill' + (playerPair ? ' on' : '');
+      document.getElementById('bankerPairBtn').className = 'pair-pill' + (bankerPair ? ' on' : '');
 
       const main = getMainResults();
-      const rate = recentWinRate(50);
+      const pattern = analyzePattern(rounds, 6);
+      const ai = aiWinRate(50);
       const streak = streakInfo();
-      const pattern = analyzePattern(6);
       const flow = flowScore();
       const risk = riskLevel(pattern);
-
-      document.getElementById('totalRounds').textContent = rounds.length + '판';
-      document.getElementById('mainRounds').textContent = '실계산 ' + main.length + '판';
-      document.getElementById('playerRate').textContent = rate.playerRate + '%';
-      document.getElementById('playerCount').textContent = rate.player + ' / ' + rate.total;
-      document.getElementById('bankerRate').textContent = rate.bankerRate + '%';
-      document.getElementById('bankerCount').textContent = rate.banker + ' / ' + rate.total;
-      document.getElementById('streak').textContent = streak.side ? meta[streak.side].label + ' ' + streak.count + '줄' : '대기';
-
-      document.getElementById('patternText').textContent = pattern.pattern || '------';
-      document.getElementById('sampleText').textContent = '플 ' + pattern.playerNext + '회 · 뱅 ' + pattern.bankerNext + '회 · 총 ' + pattern.samples + '회';
-      document.getElementById('pickText').textContent = pattern.pick ? meta[pattern.pick].label : '대기';
-      document.getElementById('pickText').style.color = pattern.pick === 'PLAYER' ? '#2563eb' : pattern.pick === 'BANKER' ? '#dc2626' : '#111';
-      document.getElementById('confidenceText').textContent = '신뢰도 ' + pattern.confidence + '%';
-
-      document.getElementById('flowScore').textContent = flow.score;
-      document.getElementById('flowText').textContent = flow.label + ' · ' + flow.detail;
-      document.getElementById('flowMeter').style.width = flow.score + '%';
-
-      document.getElementById('riskLabel').textContent = risk.label;
-      document.getElementById('riskText').textContent = risk.message;
-      document.getElementById('riskMeter').style.width = risk.value + '%';
-
       const columns = bigRoadColumns();
-      renderBigRoad(columns);
 
-      renderDotRoad('bigEye', derivedRoad(columns, 1));
-      renderDotRoad('smallRoad', derivedRoad(columns, 2));
-      renderDotRoad('cockroach', derivedRoad(columns, 3));
+      document.getElementById('totalRounds').textContent = rounds.length;
+      document.getElementById('mainRounds').textContent = main.length;
+      document.getElementById('aiRate').textContent = ai.rate.toFixed(1) + '%';
+      document.getElementById('aiCount').textContent = '적중 ' + ai.wins + ' / 예측 ' + ai.total;
+      document.getElementById('nextPick').textContent = pattern.pick ? meta[pattern.pick].kr : '대기';
+      document.getElementById('nextPick').className = 'score-big ' + (pattern.pick ? meta[pattern.pick].text : '');
+      document.getElementById('nextConfidence').textContent = '신뢰도 ' + pattern.confidence + '%';
+      document.getElementById('streakText').textContent = streak.side ? meta[streak.side].kr + ' ' + streak.count + '줄' : '대기';
+
+      renderBigRoad(columns);
+      renderDerived('bigEye', derivedRoad(columns, 1));
+      renderDerived('smallRoad', derivedRoad(columns, 2));
+      renderDerived('cockroach', derivedRoad(columns, 3));
+      renderPatternBalls(pattern.pattern);
+
+      document.getElementById('patternP').textContent = pattern.playerRate + '%';
+      document.getElementById('patternB').textContent = pattern.bankerRate + '%';
+      document.getElementById('patternSamples').textContent = pattern.samples;
+      document.getElementById('recommendText').textContent = pattern.pick ? meta[pattern.pick].kr + ' (' + meta[pattern.pick].label + ')' : '대기';
+      document.getElementById('recommendText').className = pattern.pick ? meta[pattern.pick].text : '';
+      document.getElementById('recommendConfidence').textContent = pattern.confidence + '%';
+      document.getElementById('flowScore').textContent = flow.score;
+      document.getElementById('riskLabel').textContent = risk.label;
+      document.getElementById('riskMeter').style.width = risk.value + '%';
+      document.getElementById('flowConfidence').textContent = pattern.confidence + '%';
+      document.getElementById('flowText').textContent = flow.label + ' · ' + flow.detail + ' / ' + risk.message;
+
+      const history = document.getElementById('history'); history.innerHTML = '';
+      rounds.slice(-30).forEach(r => history.appendChild(historyChip(r)));
+      if (!rounds.length) history.innerHTML = '<span class="muted">아직 입력된 기록이 없습니다.</span>';
     }
 
     function saveData() {
-      const data = {
-        app: 'baccarat-analyzer-rebuild-html-v1',
-        exportedAt: new Date().toISOString(),
-        rounds
-      };
+      const data = { app: 'baccarat-analyzer-pro-dark-v2', exportedAt: new Date().toISOString(), rounds };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'baccarat-record-' + new Date().toISOString().slice(0,10) + '.json';
-      a.click();
-      URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = 'baccarat-record-' + new Date().toISOString().slice(0,10) + '.json'; a.click(); URL.revokeObjectURL(url);
     }
 
     function loadData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+      const file = event.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = function() {
         try {
@@ -589,12 +469,9 @@
           if (!Array.isArray(loaded)) throw new Error('invalid');
           rounds = loaded;
           render();
-        } catch (e) {
-          alert('불러오기 실패: 올바른 저장 파일이 아닙니다.');
-        }
+        } catch (e) { alert('불러오기 실패: 올바른 저장 파일이 아닙니다.'); }
       };
-      reader.readAsText(file);
-      event.target.value = '';
+      reader.readAsText(file); event.target.value = '';
     }
 
     render();
